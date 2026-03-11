@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+
+  # ──────────────────────────────────────────────
+  # DATABASE 1 — accounts & balances (port 5432)
+  # ──────────────────────────────────────────────
+  postgres-accounts:
+    image: postgres:15-alpine
+    container_name: poc-postgres-accounts
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: deposit_accounts
+      POSTGRES_USER: poc_user
+      POSTGRES_PASSWORD: poc_pass
+    volumes:
+      - pg_accounts_data:/var/lib/postgresql/data
+      - ./postgres/init-accounts.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poc_user -d deposit_accounts"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ──────────────────────────────────────────────
+  # DATABASE 2 — transactions & disputes (port 5433)
+  # ──────────────────────────────────────────────
+  postgres-transactions:
+    image: postgres:15-alpine
+    container_name: poc-postgres-transactions
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: deposit_transactions
+      POSTGRES_USER: poc_user
+      POSTGRES_PASSWORD: poc_pass
+    volumes:
+      - pg_transactions_data:/var/lib/postgresql/data
+      - ./postgres/init-transactions.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poc_user -d deposit_transactions"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ──────────────────────────────────────────────
+  # APOLLO ROUTER — GraphQL Gateway (port 4000)
+  # ──────────────────────────────────────────────
+  apollo-router:
+    image: ghcr.io/apollographql/router:v1.57.1
+    container_name: poc-apollo-router
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./router/router.yaml:/dist/config/router.yaml:ro
+      - ./router/supergraph.graphql:/dist/config/supergraph.graphql:ro
+    environment:
+      APOLLO_ROUTER_CONFIG_PATH: /dist/config/router.yaml
+      APOLLO_ROUTER_SUPERGRAPH_PATH: /dist/config/supergraph.graphql
+      # Uncomment below when Apollo Studio is configured:
+      # APOLLO_KEY: ${APOLLO_KEY}
+      # APOLLO_GRAPH_REF: ${APOLLO_GRAPH_REF}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres-accounts:
+        condition: service_healthy
+      postgres-transactions:
+        condition: service_healthy
+
+volumes:
+  pg_accounts_data:
+  pg_transactions_data:
