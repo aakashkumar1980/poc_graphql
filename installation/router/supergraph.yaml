@@ -1,0 +1,13 @@
+# ============================================
+# Rover Supergraph Composition Config
+# ============================================
+# Used by: rover supergraph compose --config supergraph.yaml
+# Output:  supergraph.graphql
+
+federation_version: =2.7.1
+
+subgraphs:
+  deposit:
+    routing_url: http://host.docker.internal:8081/graphql
+    schema:
+      subgraph_url: http://host.docker.internal:8081/graphql

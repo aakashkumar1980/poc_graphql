@@ -1,0 +1,29 @@
+# ============================================
+# Apollo Router Configuration — POC (Basic)
+# ============================================
+# Security features (JWT, RBAC, depth limits) will be added later.
+
+supergraph:
+  listen: 0.0.0.0:4000
+
+# Subgraph routing — Spring Boot runs on the host machine
+override_subgraph_url:
+  deposit: http://host.docker.internal:8081/graphql
+
+# CORS — allow Postman and Apollo Studio
+cors:
+  allow_any_origin: true
+
+# Introspection ON for development (disable in production later)
+sandbox:
+  enabled: true
+homepage:
+  enabled: false
+
+# Basic telemetry
+telemetry:
+  exporters:
+    logging:
+      stdout:
+        enabled: true
+        format: text
