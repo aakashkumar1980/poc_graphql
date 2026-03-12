@@ -11,7 +11,7 @@ This document covers all software installations and account creation required to
 | Component | Runs In | Tech | Port |
 |---|---|---|---|
 | **Test Client** | Host | Postman | — |
-| **Deposit Subgraph** | Host | Spring Boot 3.3 + Java 17 | :8081 |
+| **Deposit Subgraph** | Host | Spring Boot 3.3 + Java 21 | :8081 |
 | **Apollo Router** | Docker | GraphQL Gateway | :4000 |
 | **Database 1** | Docker | PostgreSQL 15 (accounts, balances) | :5432 |
 | **Database 2** | Docker | PostgreSQL 15 (transactions, disputes) | :5433 |
@@ -77,17 +77,17 @@ docker --version          # Expected: Docker version 24.x or later
 docker compose version    # Expected: Docker Compose version v2.x
 ```
 
-### 2. Java 17 (required by Spring Boot 3.3)
+### 2. Java 21 (required by Spring Boot 3.3 — needs Java 17+)
 
 ```bash
-sudo apt install -y openjdk-17-jdk
+sudo apt install -y openjdk-21-jdk
 
 # Verify
 java -version
-# Expected: openjdk version "17.x.x"
+# Expected: openjdk version "21.x.x"
 
 # Set JAVA_HOME (add to ~/.bashrc for persistence)
-echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> ~/.bashrc
+echo 'export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64' >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -233,7 +233,7 @@ cd installation/
 | Where | What |
 |---|---|
 | **Docker** | PostgreSQL x2, Apollo Router, Rover CLI |
-| **Host** | Java 17, Maven, Spring Boot app, Postman, Git |
+| **Host** | Java 21, Maven, Spring Boot app, Postman, Git |
 | **Cloud** | Apollo Studio (optional, browser-based) |
 
 ### Accounts needed

@@ -56,18 +56,18 @@ fi
 # 3. Java 17
 # ─────────────────────────────────────────────
 echo ""
-echo "[3/5] Installing Java 17..."
+echo "[3/5] Installing Java 21..."
 
-if java -version 2>&1 | grep -q "17\."; then
-    echo "  Java 17 already installed: $(java -version 2>&1 | head -1)"
+if java -version 2>&1 | grep -q "21\."; then
+    echo "  Java 21 already installed: $(java -version 2>&1 | head -1)"
 else
-    sudo apt install -y openjdk-17-jdk
+    sudo apt install -y openjdk-21-jdk
     echo "  Java installed: $(java -version 2>&1 | head -1)"
 fi
 
 # Set JAVA_HOME if not already set
 if ! grep -q "JAVA_HOME" ~/.bashrc 2>/dev/null; then
-    echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> ~/.bashrc
+    echo 'export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64' >> ~/.bashrc
     echo "  JAVA_HOME added to ~/.bashrc"
 fi
 
