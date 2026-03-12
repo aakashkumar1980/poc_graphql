@@ -53,7 +53,7 @@ else
 fi
 
 # ─────────────────────────────────────────────
-# 3. Java 17
+# 3. Java 21
 # ─────────────────────────────────────────────
 echo ""
 echo "[3/5] Installing Java 21..."
@@ -72,17 +72,13 @@ if ! grep -q "JAVA_HOME" ~/.bashrc 2>/dev/null; then
 fi
 
 # ─────────────────────────────────────────────
-# 4. Maven
+# 4. Gradle (wrapper) — just need unzip
 # ─────────────────────────────────────────────
 echo ""
-echo "[4/5] Installing Maven..."
+echo "[4/5] Installing unzip (needed by Gradle wrapper)..."
 
-if command -v mvn &> /dev/null; then
-    echo "  Maven already installed: $(mvn -version 2>&1 | head -1)"
-else
-    sudo apt install -y maven
-    echo "  Maven installed: $(mvn -version 2>&1 | head -1)"
-fi
+sudo apt install -y unzip
+echo "  unzip installed. Gradle will use the wrapper (gradlew) bundled in the project."
 
 # ─────────────────────────────────────────────
 # 5. Git, curl, jq
@@ -102,7 +98,7 @@ echo ""
 echo -n "  Docker:         "; docker --version 2>/dev/null || echo "NOT FOUND"
 echo -n "  Docker Compose: "; docker compose version 2>/dev/null || echo "NOT FOUND"
 echo -n "  Java:           "; java -version 2>&1 | head -1
-echo -n "  Maven:          "; mvn -version 2>&1 | head -1
+echo -n "  Gradle:         "; echo "Uses wrapper (gradlew) — no system install needed"
 echo -n "  Git:            "; git --version
 echo -n "  curl:           "; curl --version 2>&1 | head -1
 echo -n "  jq:             "; jq --version
