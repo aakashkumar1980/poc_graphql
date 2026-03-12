@@ -2,7 +2,7 @@
 
 This document covers all software installations and account creation required to run the GraphQL POC.
 
-**Approach:** Docker Compose for infrastructure (PostgreSQL, Apollo Router, Rover). Only Java/Maven and Postman installed natively on the host.
+**Approach:** Docker Compose for infrastructure (PostgreSQL, Apollo Router, Rover). Only Java/Gradle and Postman installed natively on the host.
 
 ---
 
@@ -11,7 +11,7 @@ This document covers all software installations and account creation required to
 | Component | Runs In | Tech | Port |
 |---|---|---|---|
 | **Test Client** | Host | Postman | — |
-| **Deposit Subgraph** | Host | Spring Boot 3.3 + Java 17 | :8081 |
+| **Deposit Subgraph** | Host | Spring Boot 3.3 + Java 21 | :8081 |
 | **Apollo Router** | Docker | GraphQL Gateway | :4000 |
 | **Database 1** | Docker | PostgreSQL 15 (accounts, balances) | :5432 |
 | **Database 2** | Docker | PostgreSQL 15 (transactions, disputes) | :5433 |
@@ -77,29 +77,35 @@ docker --version          # Expected: Docker version 24.x or later
 docker compose version    # Expected: Docker Compose version v2.x
 ```
 
-### 2. Java 17 (required by Spring Boot 3.3)
+### 2. Java 21 (required by Spring Boot 3.3 — needs Java 17+)
 
 ```bash
-sudo apt install -y openjdk-17-jdk
+sudo apt install -y openjdk-21-jdk
 
 # Verify
 java -version
-# Expected: openjdk version "17.x.x"
+# Expected: openjdk version "21.x.x"
 
 # Set JAVA_HOME (add to ~/.bashrc for persistence)
-echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> ~/.bashrc
+echo 'export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### 3. Maven (build tool for Spring Boot)
+### 3. Gradle (build tool for Spring Boot)
+
+Gradle uses a **wrapper** (`gradlew`) bundled in the project, so no system-wide install is needed.
+Just ensure `unzip` is available (used by the wrapper on first run):
 
 ```bash
-sudo apt install -y maven
+sudo apt install -y unzip
 
-# Verify
-mvn -version
-# Expected: Apache Maven 3.x.x
+# Verify (run from the Spring Boot project root once it exists)
+./gradlew --version
+# Expected: Gradle 8.x
 ```
+
+> **Note:** The Spring Boot project will include `gradlew` and `gradle/` wrapper files.
+> You do NOT need to install Gradle system-wide.
 
 ### 4. Postman (Test Client)
 
@@ -210,7 +216,7 @@ echo "=== Host Installation Verification ==="
 echo -n "Docker:     "; docker --version
 echo -n "Compose:    "; docker compose version
 echo -n "Java:       "; java -version 2>&1 | head -1
-echo -n "Maven:      "; mvn -version 2>&1 | head -1
+echo -n "Gradle:     "; gradle --version 2>&1 | grep "Gradle" | head -1 || echo "Uses wrapper (gradlew)"
 echo -n "Git:        "; git --version
 echo -n "curl:       "; curl --version 2>&1 | head -1
 echo -n "jq:         "; jq --version
@@ -233,7 +239,7 @@ cd installation/
 | Where | What |
 |---|---|
 | **Docker** | PostgreSQL x2, Apollo Router, Rover CLI |
-| **Host** | Java 17, Maven, Spring Boot app, Postman, Git |
+| **Host** | Java 21, Gradle (wrapper), Spring Boot app, Postman, Git |
 | **Cloud** | Apollo Studio (optional, browser-based) |
 
 ### Accounts needed
