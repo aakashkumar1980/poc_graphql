@@ -10,4 +10,5 @@ subgraphs:
   deposit:
     routing_url: http://host.docker.internal:8081/graphql
     schema:
-      subgraph_url: http://host.docker.internal:8081/graphql
+      # Rover runs natively on the host, so use localhost for introspection
+      subgraph_url: http://localhost:8081/graphql

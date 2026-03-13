@@ -2,7 +2,7 @@
 
 This document covers all software installations and account creation required to run the GraphQL POC.
 
-**Approach:** Docker Compose for infrastructure (PostgreSQL, Apollo Router, Rover). Only Java/Gradle and Postman installed natively on the host.
+**Approach:** Docker Compose for infrastructure (PostgreSQL, Apollo Router). Java/Gradle, Rover CLI, and Postman installed natively on the host.
 
 ---
 
@@ -15,7 +15,7 @@ This document covers all software installations and account creation required to
 | **Apollo Router** | Docker | GraphQL Gateway | :4000 |
 | **Database 1** | Docker | PostgreSQL 15 (accounts, balances) | :5432 |
 | **Database 2** | Docker | PostgreSQL 15 (transactions, disputes) | :5433 |
-| **Schema Tooling** | Docker | Rover CLI (on-demand) | — |
+| **Schema Tooling** | Host | Rover CLI (native install) | — |
 | **Schema Explorer** | Cloud | Apollo Studio | — |
 
 > **Removed from original diagram:** External Systems (WireMock / FIS / Deluxe TRIPs) — not needed for this POC.
@@ -122,7 +122,26 @@ sudo snap install postman
 #### Account creation
 - Open Postman and sign up for a **free account** (or use without signing in for basic testing).
 
-### 5. Git, curl, jq (utilities)
+### 5. Rover CLI (Apollo schema tooling)
+
+Rover is Apollo's CLI for managing schemas, composing supergraphs, and interacting with Apollo Studio.
+
+```bash
+# Install Rover
+curl -sSL https://rover.apollo.dev/nix/latest | sh
+
+# Add to PATH (the installer will show the exact path — typically ~/.rover/bin)
+echo 'export PATH="$HOME/.rover/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# Verify
+rover --version
+# Expected: rover x.x.x
+```
+
+> **Why native install?** Rover is used for interactive commands (`config auth`, `init`) that need terminal access, and for schema composition. A native install is simpler and more reliable than Docker for these tasks.
+
+### 6. Git, curl, jq (utilities)
 
 ```bash
 sudo apt install -y git curl jq
@@ -152,11 +171,10 @@ Apollo Studio is a cloud-based schema explorer that lets you browse your GraphQL
 
 ### Step 2 — Authenticate Rover CLI with Apollo Studio
 
-Apollo Studio requires the **Rover CLI** to create and manage graphs. We run Rover via Docker.
+Rover CLI (installed in Part A, Step 5) needs to be linked to your Apollo Studio account.
 
 ```bash
-# Authenticate Rover with your Apollo Studio account
-docker run --rm -it ghcr.io/apollographql/rover:latest config auth
+rover config auth
 ```
 
 This will:
@@ -164,18 +182,14 @@ This will:
 - Ask you to log in and authorize Rover
 - Give you a **Personal API Key** — paste it back into the terminal when prompted
 
-> **Tip:** The API key is stored inside the Docker container and won't persist across runs.
-> For repeated use, you can set it as an environment variable instead (see Step 4).
+The key is saved locally at `~/.rover/` and persists across sessions.
 
 ### Step 3 — Create the Graph using Rover
 
 From the Apollo Studio Graphs page, it will prompt you to use `rover init`. Run:
 
 ```bash
-docker run --rm -it \
-    -e APOLLO_KEY=<your-personal-api-key-from-step-2> \
-    ghcr.io/apollographql/rover:latest \
-    init
+rover init
 ```
 
 Follow the interactive prompts:
@@ -325,7 +339,7 @@ docker compose exec postgres-transactions psql -U poc_user -d deposit_transactio
 
 ## PART D — Compose Supergraph with Rover CLI
 
-Rover CLI composes your subgraph schemas into a **supergraph schema** that the Apollo Router loads. It runs via Docker — no host installation needed.
+Rover CLI composes your subgraph schemas into a **supergraph schema** that the Apollo Router loads. Rover was installed natively in Part A, Step 5.
 
 > **When to run this:** After the Spring Boot subgraph is running on `:8081` (i.e., after the Spring Boot app is built and started).
 
@@ -392,6 +406,7 @@ echo -n "Gradle:     "; gradle --version 2>&1 | grep "Gradle" | head -1 || echo 
 echo -n "Git:        "; git --version
 echo -n "curl:       "; curl --version 2>&1 | head -1
 echo -n "jq:         "; jq --version
+echo -n "Rover:      "; rover --version
 echo "=== Done ==="
 ```
 
@@ -432,8 +447,8 @@ curl -s http://localhost:4000/ -H "Content-Type: application/json" \
 
 | Where | What |
 |---|---|
-| **Docker** | PostgreSQL x2, Apollo Router, Rover CLI |
-| **Host** | Java 21, Gradle (wrapper), Spring Boot app, Postman, Git |
+| **Docker** | PostgreSQL x2, Apollo Router |
+| **Host** | Java 21, Gradle (wrapper), Rover CLI, Spring Boot app, Postman, Git |
 | **Cloud** | Apollo Studio (optional, browser-based) |
 
 ### Accounts needed
