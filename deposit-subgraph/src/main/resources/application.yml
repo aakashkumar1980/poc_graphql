@@ -1,0 +1,19 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/deposit_accounts
+    username: poc_user
+    password: poc_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  graphql:
+    graphiql:
+      enabled: true
+    schema:
+      introspection:
+        enabled: true
