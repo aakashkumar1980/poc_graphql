@@ -7,6 +7,7 @@
   <marker id="ae"  markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto"><polygon points="0 0,12 4.5,0 9" fill="#c07010"/></marker>
   <marker id="as2" markerWidth="12" markerHeight="9" refX="11" refY="4.5" orient="auto"><polygon points="0 0,12 4.5,0 9" fill="#5b21b6"/></marker>
   <filter id="sd"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#00000012"/></filter>
+  <filter id="blur"><feGaussianBlur stdDeviation="2"/></filter>
 </defs>
 
 <rect x="20" y="20" width="820" height="1846" rx="12" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2" filter="url(#sd)"/>
@@ -131,19 +132,35 @@
 <text x="1874" y="1338" font-family="JetBrains Mono,monospace" font-size="15" fill="#0e7a50">    → POST /trips/v1/disputes</text>
 <text x="1874" y="1366" font-family="JetBrains Mono,monospace" font-size="15" fill="#9aafcc">    WireMock responds: disputeId, status, estimatedResolutionDate</text>
 <line x1="1860" y1="1406" x2="3750" y2="1406" stroke="#86efac" stroke-width="2"/>
-<rect x="1860" y="1412" width="1890" height="228" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8" filter="url(#sd)"/>
-<rect x="1860" y="1412" width="1890" height="42" rx="8" fill="#334155" stroke="#334155" stroke-width="0"/>
-<text x="2805" y="1440" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="17" fill="#fff" font-weight="700">POSTGRESQL 15  ·  :5432</text>
-<line x1="1860" y1="1454" x2="3750" y2="1454" stroke="#94a3b8" stroke-width="1.2"/>
-<text x="1890" y="1478" font-family="JetBrains Mono,monospace" font-size="15" fill="#60a5fa" font-weight="700">accounts</text>
-<text x="1890" y="1500" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc">id VARCHAR PK  ·  customer_id  ·  account_number  ·  status  ·  nickname  ·  created_at</text>
-<line x1="1870" y1="1510" x2="3740" y2="1510" stroke="#475569" stroke-width="0.8"/>
-<text x="1890" y="1528" font-family="JetBrains Mono,monospace" font-size="15" fill="#60a5fa" font-weight="700">transactions</text>
-<text x="1890" y="1550" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc">id VARCHAR PK  ·  account_id FK  ·  amount DECIMAL  ·  description  ·  posted_date  ·  merchant_name</text>
-<line x1="1870" y1="1560" x2="3740" y2="1560" stroke="#475569" stroke-width="0.8"/>
-<text x="1890" y="1578" font-family="JetBrains Mono,monospace" font-size="15" fill="#60a5fa" font-weight="700">dispute_cases</text>
-<text x="1890" y="1600" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc">id VARCHAR PK  ·  transaction_id FK  ·  account_id FK  ·  status  ·  reason  ·  estimated_resolution_date</text>
-<text x="1890" y="1624" font-family="JetBrains Mono,monospace" font-size="13" fill="#64748b" font-style="italic">Spring Data JPA  ·  Flyway migrations auto-run on startup</text>
+<!-- DB1: deposit_accounts (:5432) -->
+<rect x="1860" y="1412" width="925" height="228" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8" filter="url(#sd)"/>
+<rect x="1860" y="1412" width="925" height="42" rx="8" fill="#334155" stroke="#334155" stroke-width="0"/>
+<text x="2322" y="1440" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="17" fill="#fff" font-weight="700">POSTGRESQL 15  ·  :5432</text>
+<line x1="1860" y1="1454" x2="2785" y2="1454" stroke="#94a3b8" stroke-width="1.2"/>
+<text x="2322" y="1478" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="14" fill="#60a5fa" font-weight="700">deposit_accounts</text>
+<line x1="1870" y1="1488" x2="2775" y2="1488" stroke="#475569" stroke-width="0.8"/>
+<text x="1890" y="1510" font-family="JetBrains Mono,monospace" font-size="15" fill="#60a5fa" font-weight="700">accounts</text>
+<text x="1890" y="1530" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc">id VARCHAR PK · customer_id · account_number · status · nickname · created_at</text>
+<line x1="1870" y1="1540" x2="2775" y2="1540" stroke="#475569" stroke-width="0.8"/>
+<text x="1890" y="1560" font-family="JetBrains Mono,monospace" font-size="15" fill="#60a5fa" font-weight="700">balances</text>
+<text x="1890" y="1580" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc">id VARCHAR PK · account_id FK · available DECIMAL · current DECIMAL · currency</text>
+<line x1="1870" y1="1590" x2="2775" y2="1590" stroke="#475569" stroke-width="0.8"/>
+<text x="1890" y="1612" font-family="JetBrains Mono,monospace" font-size="13" fill="#64748b" font-style="italic">Spring Data JPA · Flyway migrations</text>
+
+<!-- DB2: deposit_transactions (:5433) -->
+<rect x="2815" y="1412" width="935" height="228" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.8" filter="url(#sd)"/>
+<rect x="2815" y="1412" width="935" height="42" rx="8" fill="#334155" stroke="#334155" stroke-width="0"/>
+<text x="3282" y="1440" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="17" fill="#fff" font-weight="700">POSTGRESQL 15  ·  :5433</text>
+<line x1="2815" y1="1454" x2="3750" y2="1454" stroke="#94a3b8" stroke-width="1.2"/>
+<text x="3282" y="1478" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="14" fill="#60a5fa" font-weight="700">deposit_transactions</text>
+<line x1="2825" y1="1488" x2="3740" y2="1488" stroke="#475569" stroke-width="0.8"/>
+<text x="2845" y="1510" font-family="JetBrains Mono,monospace" font-size="15" fill="#60a5fa" font-weight="700">transactions</text>
+<text x="2845" y="1530" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc">id VARCHAR PK · account_id FK · amount DECIMAL · description · posted_date · merchant_name</text>
+<line x1="2825" y1="1540" x2="3740" y2="1540" stroke="#475569" stroke-width="0.8"/>
+<text x="2845" y="1560" font-family="JetBrains Mono,monospace" font-size="15" fill="#60a5fa" font-weight="700">dispute_cases</text>
+<text x="2845" y="1580" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc">id VARCHAR PK · transaction_id FK · account_id FK · status · reason · estimated_resolution_date</text>
+<line x1="2825" y1="1590" x2="3740" y2="1590" stroke="#475569" stroke-width="0.8"/>
+<text x="2845" y="1612" font-family="JetBrains Mono,monospace" font-size="13" fill="#64748b" font-style="italic">Spring Data JPA · Flyway migrations</text>
 <rect x="3940" y="935" width="1140" height="332" rx="8" fill="#fff" stroke="#fcd34d" stroke-width="1.8" filter="url(#sd)"/>
 <rect x="3940" y="935" width="1140" height="42" rx="8" fill="#c07010" stroke="#c07010" stroke-width="0"/>
 <text x="4510" y="963" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#fff" font-weight="700">FIS Profile SOR  (Core Banking — Replace)</text>
@@ -151,28 +168,28 @@
 <text x="3954" y="999" font-family="JetBrains Mono,monospace" font-size="15" fill="#854d0e">GET /fis/v1/accounts/{id}/balance</text>
 <line x1="3940" y1="1017" x2="5080" y2="1017" stroke="#fde68a" stroke-width="1.2"/>
 <text x="3954" y="1037" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151" font-weight="700">Response JSON:</text>
-<rect x="3948" y="1047" width="1124" height="182" rx="6" fill="#0f1e2e" stroke="#1e2d3d" stroke-width="1"/>
-<text x="3962" y="1076" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">{</text>
-<text x="3980" y="1098" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"acctNbr"</text>
-<text x="4061" y="1098" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4079" y="1098" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"****1234"</text>
-<text x="4170" y="1098" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1120" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"acctStatus"</text>
-<text x="4089" y="1120" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4107" y="1120" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"ACTIVE"</text>
-<text x="4179" y="1120" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1142" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"avlBal"</text>
-<text x="4052" y="1142" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4070" y="1142" font-family="JetBrains Mono,monospace" font-size="15" fill="#d2a8ff">4850.00</text>
-<text x="4133" y="1142" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1164" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"currBal"</text>
-<text x="4061" y="1164" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4079" y="1164" font-family="JetBrains Mono,monospace" font-size="15" fill="#d2a8ff">5100.00</text>
-<text x="4142" y="1164" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1186" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"currCd"</text>
-<text x="4052" y="1186" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4070" y="1186" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"USD"</text>
-<text x="3962" y="1208" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
+<rect x="3948" y="1047" width="1124" height="182" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="3962" y="1076" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">{</text>
+<text x="3980" y="1098" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"acctNbr"</text>
+<text x="4061" y="1098" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4079" y="1098" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"****1234"</text>
+<text x="4170" y="1098" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1120" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"acctStatus"</text>
+<text x="4089" y="1120" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4107" y="1120" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"ACTIVE"</text>
+<text x="4179" y="1120" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1142" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"avlBal"</text>
+<text x="4052" y="1142" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4070" y="1142" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">4850.00</text>
+<text x="4133" y="1142" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1164" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"currBal"</text>
+<text x="4061" y="1164" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4079" y="1164" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">5100.00</text>
+<text x="4142" y="1164" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1186" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"currCd"</text>
+<text x="4052" y="1186" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4070" y="1186" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"USD"</text>
+<text x="3962" y="1208" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
 <text x="3954" y="1241" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc" font-style="italic">WireMock :8099  ·  Prod: real FIS endpoint</text>
 <rect x="3940" y="1295" width="1140" height="568" rx="8" fill="#fff" stroke="#86efac" stroke-width="1.8" filter="url(#sd)"/>
 <rect x="3940" y="1295" width="1140" height="42" rx="8" fill="#0e7a50" stroke="#0e7a50" stroke-width="0"/>
@@ -181,47 +198,47 @@
 <text x="3954" y="1359" font-family="JetBrains Mono,monospace" font-size="15" fill="#0e7a50">POST /trips/v1/disputes</text>
 <line x1="3940" y1="1377" x2="5080" y2="1377" stroke="#e0fef0" stroke-width="1.2"/>
 <text x="3954" y="1399" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151" font-weight="700">Request JSON:</text>
-<rect x="3948" y="1409" width="1124" height="182" rx="6" fill="#0f1e2e" stroke="#1e2d3d" stroke-width="1"/>
-<text x="3962" y="1438" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">{</text>
-<text x="3980" y="1460" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"transactionId"</text>
-<text x="4116" y="1460" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4134" y="1460" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"TXN-8821"</text>
-<text x="4225" y="1460" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1482" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"accountId"</text>
-<text x="4080" y="1482" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4098" y="1482" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"ACT-234"</text>
-<text x="4179" y="1482" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1504" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"amount"</text>
-<text x="4052" y="1504" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4070" y="1504" font-family="JetBrains Mono,monospace" font-size="15" fill="#d2a8ff">-42.50</text>
-<text x="4124" y="1504" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1526" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"reason"</text>
-<text x="4052" y="1526" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4070" y="1526" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"Not my purchase"</text>
-<text x="4224" y="1526" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1548" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"merchantName"</text>
-<text x="4107" y="1548" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4125" y="1548" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"Starbucks #4421"</text>
-<text x="3962" y="1570" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
+<rect x="3948" y="1409" width="1124" height="182" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="3962" y="1438" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">{</text>
+<text x="3980" y="1460" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"transactionId"</text>
+<text x="4116" y="1460" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4134" y="1460" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"TXN-8821"</text>
+<text x="4225" y="1460" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1482" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"accountId"</text>
+<text x="4080" y="1482" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4098" y="1482" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"ACT-234"</text>
+<text x="4179" y="1482" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1504" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"amount"</text>
+<text x="4052" y="1504" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4070" y="1504" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">-42.50</text>
+<text x="4124" y="1504" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1526" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"reason"</text>
+<text x="4052" y="1526" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4070" y="1526" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"Not my purchase"</text>
+<text x="4224" y="1526" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1548" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"merchantName"</text>
+<text x="4107" y="1548" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4125" y="1548" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"Starbucks #4421"</text>
+<text x="3962" y="1570" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
 <text x="3954" y="1607" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151" font-weight="700">Response JSON:</text>
-<rect x="3948" y="1617" width="1124" height="160" rx="6" fill="#0f1e2e" stroke="#1e2d3d" stroke-width="1"/>
-<text x="3962" y="1646" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">{</text>
-<text x="3980" y="1668" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"disputeId"</text>
-<text x="4080" y="1668" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4098" y="1668" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"DSP-4491"</text>
-<text x="4189" y="1668" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1690" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"status"</text>
-<text x="4052" y="1690" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4070" y="1690" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"OPENED"</text>
-<text x="4142" y="1690" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1712" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"estimatedResolutionDate"</text>
-<text x="4207" y="1712" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4225" y="1712" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"2026-03-15"</text>
-<text x="4334" y="1712" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="3980" y="1734" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"provisionedAmount"</text>
-<text x="4152" y="1734" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="4170" y="1734" font-family="JetBrains Mono,monospace" font-size="15" fill="#d2a8ff">42.50</text>
-<text x="3962" y="1756" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
+<rect x="3948" y="1617" width="1124" height="160" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="3962" y="1646" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">{</text>
+<text x="3980" y="1668" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"disputeId"</text>
+<text x="4080" y="1668" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4098" y="1668" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"DSP-4491"</text>
+<text x="4189" y="1668" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1690" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"status"</text>
+<text x="4052" y="1690" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4070" y="1690" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"OPENED"</text>
+<text x="4142" y="1690" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1712" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"estimatedResolutionDate"</text>
+<text x="4207" y="1712" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4225" y="1712" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"2026-03-15"</text>
+<text x="4334" y="1712" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="3980" y="1734" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"provisionedAmount"</text>
+<text x="4152" y="1734" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="4170" y="1734" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">42.50</text>
+<text x="3962" y="1756" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
 <text x="3954" y="1791" font-family="JetBrains Mono,monospace" font-size="13" fill="#9aafcc" font-style="italic">WireMock :8099  ·  Prod: real Deluxe TRIPs endpoint</text>
 
 <rect x="40" y="80" width="780" height="86" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="2" filter="url(#sd)"/>
@@ -233,111 +250,111 @@
 <rect x="40" y="224" width="780" height="32" rx="8" fill="#1e3a8a" stroke="#1e3a8a" stroke-width="0"/>
 <text x="52" y="246" font-family="JetBrains Mono,monospace" font-size="15" fill="#93c5fd" font-weight="700">Query — GetAccount</text>
 <text x="50" y="276" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af" font-weight="700">Request:</text>
-<rect x="40" y="286" width="780" height="424" rx="6" fill="#0f1e2e" stroke="#1e2d3d" stroke-width="1"/>
-<text x="54" y="315" font-family="JetBrains Mono,monospace" font-size="15" fill="#ff7b72">query</text>
-<text x="99" y="315" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5"> GetAccount {</text>
-<text x="72" y="337" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">account(</text>
-<text x="90" y="359" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">id</text>
-<text x="108" y="359" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="126" y="359" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"ACT-234"</text>
-<text x="72" y="381" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">) {</text>
-<text x="90" y="403" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">accountNumber</text>
-<text x="90" y="425" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">status</text>
-<text x="90" y="447" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">balance {</text>
-<text x="108" y="469" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">available</text>
-<text x="108" y="491" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">currency</text>
-<text x="90" y="513" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="90" y="535" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">transactions(</text>
-<text x="108" y="557" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">first</text>
-<text x="153" y="557" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="171" y="557" font-family="JetBrains Mono,monospace" font-size="15" fill="#d2a8ff">5</text>
-<text x="90" y="579" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">) {</text>
-<text x="108" y="601" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">amount</text>
-<text x="108" y="623" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">description</text>
-<text x="90" y="645" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="72" y="667" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="54" y="689" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
+<rect x="40" y="286" width="780" height="424" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="54" y="315" font-family="JetBrains Mono,monospace" font-size="15" fill="#dc2626">query</text>
+<text x="99" y="315" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151"> GetAccount {</text>
+<text x="72" y="337" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">account(</text>
+<text x="90" y="359" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">id</text>
+<text x="108" y="359" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="126" y="359" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"ACT-234"</text>
+<text x="72" y="381" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">) {</text>
+<text x="90" y="403" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">accountNumber</text>
+<text x="90" y="425" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">status</text>
+<text x="90" y="447" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">balance {</text>
+<text x="108" y="469" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">available</text>
+<text x="108" y="491" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">currency</text>
+<text x="90" y="513" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="90" y="535" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">transactions(</text>
+<text x="108" y="557" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">first</text>
+<text x="153" y="557" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="171" y="557" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">5</text>
+<text x="90" y="579" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">) {</text>
+<text x="108" y="601" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">amount</text>
+<text x="108" y="623" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">description</text>
+<text x="90" y="645" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="72" y="667" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="54" y="689" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
 <text x="50" y="724" font-family="JetBrains Mono,monospace" font-size="15" fill="#0e7a50" font-weight="700">Response:</text>
-<rect x="40" y="734" width="780" height="424" rx="6" fill="#0f1e2e" stroke="#1e2d3d" stroke-width="1"/>
-<text x="54" y="763" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">{</text>
-<text x="72" y="785" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"data"</text>
-<text x="126" y="785" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: {</text>
-<text x="90" y="807" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"account"</text>
-<text x="171" y="807" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: {</text>
-<text x="108" y="829" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"accountNumber"</text>
-<text x="244" y="829" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="262" y="829" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"****1234"</text>
-<text x="353" y="829" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="108" y="851" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"status"</text>
-<text x="180" y="851" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="198" y="851" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"ACTIVE"</text>
-<text x="270" y="851" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="108" y="873" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"balance"</text>
-<text x="189" y="873" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: {</text>
-<text x="126" y="895" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"available"</text>
-<text x="226" y="895" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="244" y="895" font-family="JetBrains Mono,monospace" font-size="15" fill="#d2a8ff">4850.00</text>
-<text x="307" y="895" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="126" y="917" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"currency"</text>
-<text x="217" y="917" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="235" y="917" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"USD"</text>
-<text x="108" y="939" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">},</text>
-<text x="108" y="961" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"transactions"</text>
-<text x="235" y="961" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: [</text>
-<text x="126" y="983" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">{</text>
-<text x="145" y="1005" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"amount"</text>
-<text x="217" y="1005" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="235" y="1005" font-family="JetBrains Mono,monospace" font-size="15" fill="#d2a8ff">-42.50</text>
-<text x="289" y="1005" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="145" y="1027" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"description"</text>
-<text x="263" y="1027" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="281" y="1027" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"Starbucks #4421"</text>
-<text x="126" y="1049" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="108" y="1071" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">]</text>
-<text x="90" y="1093" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="72" y="1115" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="54" y="1137" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
+<rect x="40" y="734" width="780" height="424" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="54" y="763" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">{</text>
+<text x="72" y="785" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"data"</text>
+<text x="126" y="785" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: {</text>
+<text x="90" y="807" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"account"</text>
+<text x="171" y="807" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: {</text>
+<text x="108" y="829" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"accountNumber"</text>
+<text x="244" y="829" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="262" y="829" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"****1234"</text>
+<text x="353" y="829" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="108" y="851" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"status"</text>
+<text x="180" y="851" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="198" y="851" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"ACTIVE"</text>
+<text x="270" y="851" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="108" y="873" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"balance"</text>
+<text x="189" y="873" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: {</text>
+<text x="126" y="895" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"available"</text>
+<text x="226" y="895" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="244" y="895" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">4850.00</text>
+<text x="307" y="895" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="126" y="917" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"currency"</text>
+<text x="217" y="917" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="235" y="917" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"USD"</text>
+<text x="108" y="939" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">},</text>
+<text x="108" y="961" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"transactions"</text>
+<text x="235" y="961" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: [</text>
+<text x="126" y="983" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">{</text>
+<text x="145" y="1005" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"amount"</text>
+<text x="217" y="1005" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="235" y="1005" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">-42.50</text>
+<text x="289" y="1005" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="145" y="1027" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"description"</text>
+<text x="263" y="1027" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="281" y="1027" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"Starbucks #4421"</text>
+<text x="126" y="1049" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="108" y="1071" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">]</text>
+<text x="90" y="1093" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="72" y="1115" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="54" y="1137" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
 <rect x="40" y="1184" width="780" height="32" rx="8" fill="#14532d" stroke="#14532d" stroke-width="0"/>
 <text x="52" y="1206" font-family="JetBrains Mono,monospace" font-size="15" fill="#86efac" font-weight="700">Mutation — OpenDispute</text>
 <text x="50" y="1236" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af" font-weight="700">Request:</text>
-<rect x="40" y="1246" width="780" height="248" rx="6" fill="#0f1e2e" stroke="#1e2d3d" stroke-width="1"/>
-<text x="54" y="1275" font-family="JetBrains Mono,monospace" font-size="15" fill="#ff7b72">mutation</text>
-<text x="126" y="1275" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5"> OpenDispute {</text>
-<text x="72" y="1297" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">openDispute(</text>
-<text x="90" y="1319" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">transactionId</text>
-<text x="208" y="1319" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="226" y="1319" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"TXN-8821"</text>
-<text x="317" y="1319" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="90" y="1341" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">reason</text>
-<text x="144" y="1341" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="162" y="1341" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"Not my purchase"</text>
-<text x="72" y="1363" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">) {</text>
-<text x="90" y="1385" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">disputeId</text>
-<text x="90" y="1407" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">status</text>
-<text x="90" y="1429" font-family="JetBrains Mono,monospace" font-size="15" fill="#a8d8a8">estimatedResolutionDate</text>
-<text x="72" y="1451" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="54" y="1473" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
+<rect x="40" y="1246" width="780" height="248" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="54" y="1275" font-family="JetBrains Mono,monospace" font-size="15" fill="#dc2626">mutation</text>
+<text x="126" y="1275" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151"> OpenDispute {</text>
+<text x="72" y="1297" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">openDispute(</text>
+<text x="90" y="1319" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">transactionId</text>
+<text x="208" y="1319" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="226" y="1319" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"TXN-8821"</text>
+<text x="317" y="1319" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="90" y="1341" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">reason</text>
+<text x="144" y="1341" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="162" y="1341" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"Not my purchase"</text>
+<text x="72" y="1363" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">) {</text>
+<text x="90" y="1385" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">disputeId</text>
+<text x="90" y="1407" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">status</text>
+<text x="90" y="1429" font-family="JetBrains Mono,monospace" font-size="15" fill="#15803d">estimatedResolutionDate</text>
+<text x="72" y="1451" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="54" y="1473" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
 <text x="50" y="1508" font-family="JetBrains Mono,monospace" font-size="15" fill="#0e7a50" font-weight="700">Response:</text>
-<rect x="40" y="1518" width="780" height="226" rx="6" fill="#0f1e2e" stroke="#1e2d3d" stroke-width="1"/>
-<text x="54" y="1547" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">{</text>
-<text x="72" y="1569" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"data"</text>
-<text x="126" y="1569" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: {</text>
-<text x="90" y="1591" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"openDispute"</text>
-<text x="208" y="1591" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: {</text>
-<text x="108" y="1613" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"disputeId"</text>
-<text x="208" y="1613" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="226" y="1613" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"DSP-4491"</text>
-<text x="317" y="1613" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="108" y="1635" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"status"</text>
-<text x="180" y="1635" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="198" y="1635" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"OPENED"</text>
-<text x="270" y="1635" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">,</text>
-<text x="108" y="1657" font-family="JetBrains Mono,monospace" font-size="15" fill="#79c0ff">"estimatedResolutionDate"</text>
-<text x="335" y="1657" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">: </text>
-<text x="353" y="1657" font-family="JetBrains Mono,monospace" font-size="15" fill="#ffab70">"2026-03-15"</text>
-<text x="90" y="1679" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="72" y="1701" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
-<text x="54" y="1723" font-family="JetBrains Mono,monospace" font-size="15" fill="#cdd9e5">}</text>
+<rect x="40" y="1518" width="780" height="226" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="54" y="1547" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">{</text>
+<text x="72" y="1569" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"data"</text>
+<text x="126" y="1569" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: {</text>
+<text x="90" y="1591" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"openDispute"</text>
+<text x="208" y="1591" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: {</text>
+<text x="108" y="1613" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"disputeId"</text>
+<text x="208" y="1613" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="226" y="1613" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"DSP-4491"</text>
+<text x="317" y="1613" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="108" y="1635" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"status"</text>
+<text x="180" y="1635" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="198" y="1635" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"OPENED"</text>
+<text x="270" y="1635" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">,</text>
+<text x="108" y="1657" font-family="JetBrains Mono,monospace" font-size="15" fill="#1e40af">"estimatedResolutionDate"</text>
+<text x="335" y="1657" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">: </text>
+<text x="353" y="1657" font-family="JetBrains Mono,monospace" font-size="15" fill="#b45309">"2026-03-15"</text>
+<text x="90" y="1679" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="72" y="1701" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
+<text x="54" y="1723" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">}</text>
 <rect x="40" y="1766" width="780" height="76" rx="8" fill="#ede9fe" stroke="#c4b5fd" stroke-width="2" filter="url(#sd)" stroke-dasharray="8,4"/>
 <text x="430" y="1794" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="17" fill="#5b21b6" font-weight="700">APOLLO STUDIO</text>
 <text x="430" y="1816" text-anchor="middle" font-family="Sora,sans-serif" font-size="15" fill="#7c3aed">studio.apollographql.com</text>
@@ -377,17 +394,17 @@
 <text x="42" y="2284" font-family="Sora,sans-serif" font-size="14" fill="#374151">Complexity Limit: Limits how many fields a single query can request at once (max-complexity: 150).</text>
 <text x="42" y="2312" font-family="Sora,sans-serif" font-size="14" fill="#374151">Turn off Introspection in production: Prevents attackers from exploring the full schema.</text>
 <text x="42" y="2334" font-family="Sora,sans-serif" font-size="14" fill="#374151">Apollo Studio still works because it uses the managed schema registry.</text>
-<rect x="42" y="2348" width="2489" height="196" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-<rect x="2477" y="2352" width="48" height="18" rx="4" fill="#334155" stroke="#475569" stroke-width="0"/>
-<text x="2501" y="2364" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#94a3b8">java</text>
-<text x="60" y="2379" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b8a9e"># router.yaml</text>
-<text x="60" y="2399" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">limits:</text>
-<text x="60" y="2419" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">  max_depth: 6</text>
-<text x="60" y="2439" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">  max_complexity: 150</text>
-<text x="60" y="2459" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">introspection: false</text>
-<text x="60" y="2479" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">authentication:</text>
-<text x="60" y="2499" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">  jwt:</text>
-<text x="60" y="2519" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">    jwks_url: https://bank.internal/oauth2/jwks</text>
+<rect x="42" y="2348" width="2489" height="196" rx="6" fill="#f1f5f9" stroke="#d1d5db" stroke-width="1"/>
+<rect x="2477" y="2352" width="48" height="18" rx="4" fill="#e2e8f0" stroke="#94a3b8" stroke-width="0"/>
+<text x="2501" y="2364" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#64748b">java</text>
+<text x="60" y="2379" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b7280"># router.yaml</text>
+<text x="60" y="2399" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">limits:</text>
+<text x="60" y="2419" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">  max_depth: 6</text>
+<text x="60" y="2439" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">  max_complexity: 150</text>
+<text x="60" y="2459" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">introspection: false</text>
+<text x="60" y="2479" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">authentication:</text>
+<text x="60" y="2499" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">  jwt:</text>
+<text x="60" y="2519" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">    jwks_url: https://bank.internal/oauth2/jwks</text>
 <rect x="38" y="2542" width="4" height="20" rx="2" fill="#3b82f6" stroke="#3b82f6" stroke-width="0"/>
 <text x="50" y="2558" font-family="Sora,sans-serif" font-size="16" fill="#1e40af" font-weight="700">3. Spring Boot service layer — a small amount of code</text>
 <line x1="38" y1="2582" x2="2535" y2="2582" stroke="#e2e8f0" stroke-width="1"/>
@@ -395,18 +412,18 @@
 <text x="42" y="2628" font-family="Sora,sans-serif" font-size="14" fill="#374151">Throw a GraphQlException with a safe message — never expose internal details.</text>
 <text x="42" y="2656" font-family="Sora,sans-serif" font-size="14" fill="#374151">Rate Limiting (A07): Wrap the /graphql controller with a Resilience4j RateLimiter.</text>
 <text x="42" y="2678" font-family="Sora,sans-serif" font-size="14" fill="#374151">This limits how many requests a single IP can send per second.</text>
-<rect x="42" y="2692" width="2489" height="216" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-<rect x="2477" y="2696" width="48" height="18" rx="4" fill="#334155" stroke="#475569" stroke-width="0"/>
-<text x="2501" y="2708" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#94a3b8">java</text>
-<text x="60" y="2723" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b8a9e">// Spring Boot — input validation on a resolver</text>
-<text x="60" y="2743" font-family="JetBrains Mono,monospace" font-size="13" fill="#86efac">@QueryMapping</text>
-<text x="60" y="2763" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">public Account account(@Argument @NotBlank String id) {</text>
-<text x="60" y="2783" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">    return accountService.findById(id);</text>
-<text x="60" y="2803" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">}</text>
-<text x="60" y="2823" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0"></text>
-<text x="60" y="2843" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b8a9e">// Return a safe error — no stack trace to the client</text>
-<text x="60" y="2863" font-family="JetBrains Mono,monospace" font-size="13" fill="#f59e0b">throw new GraphQlException("Account not found",</text>
-<text x="60" y="2883" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">    ErrorType.BAD_REQUEST);</text>
+<rect x="42" y="2692" width="2489" height="216" rx="6" fill="#f1f5f9" stroke="#d1d5db" stroke-width="1"/>
+<rect x="2477" y="2696" width="48" height="18" rx="4" fill="#e2e8f0" stroke="#94a3b8" stroke-width="0"/>
+<text x="2501" y="2708" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#64748b">java</text>
+<text x="60" y="2723" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b7280">// Spring Boot — input validation on a resolver</text>
+<text x="60" y="2743" font-family="JetBrains Mono,monospace" font-size="13" fill="#059669">@QueryMapping</text>
+<text x="60" y="2763" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">public Account account(@Argument @NotBlank String id) {</text>
+<text x="60" y="2783" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">    return accountService.findById(id);</text>
+<text x="60" y="2803" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">}</text>
+<text x="60" y="2823" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569"></text>
+<text x="60" y="2843" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b7280">// Return a safe error — no stack trace to the client</text>
+<text x="60" y="2863" font-family="JetBrains Mono,monospace" font-size="13" fill="#d97706">throw new GraphQlException("Account not found",</text>
+<text x="60" y="2883" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">    ErrorType.BAD_REQUEST);</text>
 <rect x="2577" y="1940" width="2533" height="44" rx="10" fill="#22c55e22" stroke="#22c55e" stroke-width="1.5"/>
 <text x="2593" y="1970" font-family="Sora,sans-serif" font-size="17" fill="#0e7a50" font-weight="700">Role-Based Access Control (RBAC) — Who can call what</text>
 <rect x="2595" y="1984" width="4" height="20" rx="2" fill="#22c55e" stroke="#22c55e" stroke-width="0"/>
@@ -423,53 +440,61 @@
 <line x1="2595" y1="2204" x2="5092" y2="2204" stroke="#e2e8f0" stroke-width="1"/>
 <text x="2599" y="2228" font-family="Sora,sans-serif" font-size="14" fill="#374151">The router checks the JWT signature against the bank JWKS endpoint.</text>
 <text x="2599" y="2250" font-family="Sora,sans-serif" font-size="14" fill="#374151">Any request without a valid token is rejected with HTTP 401 before reaching Spring Boot.</text>
-<rect x="2599" y="2264" width="2489" height="156" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-<rect x="5034" y="2268" width="48" height="18" rx="4" fill="#334155" stroke="#475569" stroke-width="0"/>
-<text x="5058" y="2280" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#94a3b8">java</text>
-<text x="2617" y="2295" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b8a9e"># router.yaml</text>
-<text x="2617" y="2315" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">authentication:</text>
-<text x="2617" y="2335" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">  jwt:</text>
-<text x="2617" y="2355" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">    jwks_url: https://bank.internal/oauth2/jwks</text>
-<text x="2617" y="2375" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">authorization:</text>
-<text x="2617" y="2395" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">  require_authentication: true</text>
+<rect x="2599" y="2264" width="2489" height="156" rx="6" fill="#f1f5f9" stroke="#d1d5db" stroke-width="1"/>
+<rect x="5034" y="2268" width="48" height="18" rx="4" fill="#e2e8f0" stroke="#94a3b8" stroke-width="0"/>
+<text x="5058" y="2280" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#64748b">java</text>
+<text x="2617" y="2295" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b7280"># router.yaml</text>
+<text x="2617" y="2315" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">authentication:</text>
+<text x="2617" y="2335" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">  jwt:</text>
+<text x="2617" y="2355" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">    jwks_url: https://bank.internal/oauth2/jwks</text>
+<text x="2617" y="2375" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">authorization:</text>
+<text x="2617" y="2395" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">  require_authentication: true</text>
 <rect x="2595" y="2418" width="4" height="20" rx="2" fill="#22c55e" stroke="#22c55e" stroke-width="0"/>
 <text x="2607" y="2434" font-family="Sora,sans-serif" font-size="16" fill="#0e7a50" font-weight="700">Layer 2 — Spring Boot service layer (@PreAuthorize)</text>
 <line x1="2595" y1="2458" x2="5092" y2="2458" stroke="#e2e8f0" stroke-width="1"/>
 <text x="2599" y="2482" font-family="Sora,sans-serif" font-size="14" fill="#374151">Annotate each resolver method with which roles are allowed to call it.</text>
 <text x="2599" y="2504" font-family="Sora,sans-serif" font-size="14" fill="#374151">Spring Security enforces this automatically — the method body never runs for unauthorised callers.</text>
-<rect x="2599" y="2518" width="2489" height="316" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-<rect x="5034" y="2522" width="48" height="18" rx="4" fill="#334155" stroke="#475569" stroke-width="0"/>
-<text x="5058" y="2534" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#94a3b8">java</text>
-<text x="2617" y="2549" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b8a9e">// Only CUSTOMER or ADVISOR can query an account</text>
-<text x="2617" y="2569" font-family="JetBrains Mono,monospace" font-size="13" fill="#86efac">@QueryMapping</text>
-<text x="2617" y="2589" font-family="JetBrains Mono,monospace" font-size="13" fill="#f59e0b">@PreAuthorize("hasRole('CUSTOMER') or hasRole('ADVISOR')")</text>
-<text x="2617" y="2609" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">public Account account(@Argument String id) {</text>
-<text x="2617" y="2629" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">    return accountService.findById(id, getCurrentUser());</text>
-<text x="2617" y="2649" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">}</text>
-<text x="2617" y="2669" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0"></text>
-<text x="2617" y="2689" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b8a9e">// Only DISPUTE_AGENT can open a dispute</text>
-<text x="2617" y="2709" font-family="JetBrains Mono,monospace" font-size="13" fill="#86efac">@MutationMapping</text>
-<text x="2617" y="2729" font-family="JetBrains Mono,monospace" font-size="13" fill="#f59e0b">@PreAuthorize("hasRole('DISPUTE_AGENT')")</text>
-<text x="2617" y="2749" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">public DisputeCase openDispute(@Argument String txnId,</text>
-<text x="2617" y="2769" font-family="JetBrains Mono,monospace" font-size="13" fill="#86efac">                              @Argument String reason) {</text>
-<text x="2617" y="2789" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">    return disputeService.open(txnId, reason);</text>
-<text x="2617" y="2809" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">}</text>
+<rect x="2599" y="2518" width="2489" height="316" rx="6" fill="#f1f5f9" stroke="#d1d5db" stroke-width="1"/>
+<rect x="5034" y="2522" width="48" height="18" rx="4" fill="#e2e8f0" stroke="#94a3b8" stroke-width="0"/>
+<text x="5058" y="2534" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#64748b">java</text>
+<text x="2617" y="2549" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b7280">// Only CUSTOMER or ADVISOR can query an account</text>
+<text x="2617" y="2569" font-family="JetBrains Mono,monospace" font-size="13" fill="#059669">@QueryMapping</text>
+<text x="2617" y="2589" font-family="JetBrains Mono,monospace" font-size="13" fill="#d97706">@PreAuthorize("hasRole('CUSTOMER') or hasRole('ADVISOR')")</text>
+<text x="2617" y="2609" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">public Account account(@Argument String id) {</text>
+<text x="2617" y="2629" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">    return accountService.findById(id, getCurrentUser());</text>
+<text x="2617" y="2649" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">}</text>
+<text x="2617" y="2669" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569"></text>
+<text x="2617" y="2689" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b7280">// Only DISPUTE_AGENT can open a dispute</text>
+<text x="2617" y="2709" font-family="JetBrains Mono,monospace" font-size="13" fill="#059669">@MutationMapping</text>
+<text x="2617" y="2729" font-family="JetBrains Mono,monospace" font-size="13" fill="#d97706">@PreAuthorize("hasRole('DISPUTE_AGENT')")</text>
+<text x="2617" y="2749" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">public DisputeCase openDispute(@Argument String txnId,</text>
+<text x="2617" y="2769" font-family="JetBrains Mono,monospace" font-size="13" fill="#059669">                              @Argument String reason) {</text>
+<text x="2617" y="2789" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">    return disputeService.open(txnId, reason);</text>
+<text x="2617" y="2809" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">}</text>
 <rect x="2595" y="2832" width="4" height="20" rx="2" fill="#22c55e" stroke="#22c55e" stroke-width="0"/>
 <text x="2607" y="2848" font-family="Sora,sans-serif" font-size="16" fill="#0e7a50" font-weight="700">Layer 3 — Inside the service — customers see only their own data</text>
 <line x1="2595" y1="2872" x2="5092" y2="2872" stroke="#e2e8f0" stroke-width="1"/>
 <text x="2599" y="2896" font-family="Sora,sans-serif" font-size="14" fill="#374151">Even if a CUSTOMER has the right role, they should not see another customer's account.</text>
 <text x="2599" y="2918" font-family="Sora,sans-serif" font-size="14" fill="#374151">A simple ownership check inside AccountService enforces this.</text>
-<rect x="2599" y="2932" width="2489" height="236" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-<rect x="5034" y="2936" width="48" height="18" rx="4" fill="#334155" stroke="#475569" stroke-width="0"/>
-<text x="5058" y="2948" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#94a3b8">java</text>
-<text x="2617" y="2963" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b8a9e">// AccountService.java</text>
-<text x="2617" y="2983" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">public Account findById(String id, UserPrincipal user) {</text>
-<text x="2617" y="3003" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">    Account account = repository.findById(id).orElseThrow();</text>
-<text x="2617" y="3023" font-family="JetBrains Mono,monospace" font-size="13" fill="#f59e0b">    if (user.hasRole("CUSTOMER")</text>
-<text x="2617" y="3043" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">        &amp;&amp; !account.getCustomerId().equals(user.getSub())) {</text>
-<text x="2617" y="3063" font-family="JetBrains Mono,monospace" font-size="13" fill="#f59e0b">        throw new GraphQlException("Access denied",</text>
-<text x="2617" y="3083" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">            ErrorType.FORBIDDEN);</text>
-<text x="2617" y="3103" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">    }</text>
-<text x="2617" y="3123" font-family="JetBrains Mono,monospace" font-size="13" fill="#a5f3fc">    return account;</text>
-<text x="2617" y="3143" font-family="JetBrains Mono,monospace" font-size="13" fill="#e2e8f0">}</text>
+<rect x="2599" y="2932" width="2489" height="236" rx="6" fill="#f1f5f9" stroke="#d1d5db" stroke-width="1"/>
+<rect x="5034" y="2936" width="48" height="18" rx="4" fill="#e2e8f0" stroke="#94a3b8" stroke-width="0"/>
+<text x="5058" y="2948" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="12" fill="#64748b">java</text>
+<text x="2617" y="2963" font-family="JetBrains Mono,monospace" font-size="13" fill="#6b7280">// AccountService.java</text>
+<text x="2617" y="2983" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">public Account findById(String id, UserPrincipal user) {</text>
+<text x="2617" y="3003" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">    Account account = repository.findById(id).orElseThrow();</text>
+<text x="2617" y="3023" font-family="JetBrains Mono,monospace" font-size="13" fill="#d97706">    if (user.hasRole("CUSTOMER")</text>
+<text x="2617" y="3043" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">        &amp;&amp; !account.getCustomerId().equals(user.getSub())) {</text>
+<text x="2617" y="3063" font-family="JetBrains Mono,monospace" font-size="13" fill="#d97706">        throw new GraphQlException("Access denied",</text>
+<text x="2617" y="3083" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">            ErrorType.FORBIDDEN);</text>
+<text x="2617" y="3103" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">    }</text>
+<text x="2617" y="3123" font-family="JetBrains Mono,monospace" font-size="13" fill="#0e7490">    return account;</text>
+<text x="2617" y="3143" font-family="JetBrains Mono,monospace" font-size="13" fill="#475569">}</text>
+
+<!-- External Systems — blurred / not included in POC -->
+<rect x="3915" y="870" width="1195" height="985" rx="14" fill="white" opacity="0.75"/>
+<rect x="3920" y="875" width="1180" height="970" rx="12" fill="none" stroke="#d1d5db" stroke-width="2" stroke-dasharray="12,6"/>
+<text x="4510" y="1330" text-anchor="middle" font-family="Sora,sans-serif" font-size="28" fill="#9ca3af" font-weight="700" letter-spacing="2">NOT INCLUDED</text>
+<text x="4510" y="1365" text-anchor="middle" font-family="Sora,sans-serif" font-size="28" fill="#9ca3af" font-weight="700" letter-spacing="2">IN THIS POC</text>
+<!-- Fade arrows going to External Systems -->
+<rect x="3750" y="1080" width="180" height="520" fill="white" opacity="0.8"/>
 </svg>
