@@ -61,9 +61,10 @@ services:
     environment:
       APOLLO_ROUTER_CONFIG_PATH: /dist/config/router.yaml
       APOLLO_ROUTER_SUPERGRAPH_PATH: /dist/config/supergraph.graphql
-      # Uncomment below when Apollo Studio is configured:
-      # APOLLO_KEY: ${APOLLO_KEY}
-      # APOLLO_GRAPH_REF: ${APOLLO_GRAPH_REF}
+      # Apollo Studio credentials — loaded from .env file (see INSTALLATION.md Part B)
+      # If .env is missing, these default to empty and Router runs without Studio connection.
+      APOLLO_KEY: ${APOLLO_KEY:-}
+      APOLLO_GRAPH_REF: ${APOLLO_GRAPH_REF:-}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

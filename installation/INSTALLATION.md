@@ -27,22 +27,23 @@ This document covers all software installations and account creation required to
 
 ```
 installation/
-├── INSTALLATION.md              ← this file
-├── docker-compose.yml           ← PostgreSQL x2 + Apollo Router
-├── .env                         ← (create manually) Apollo Studio keys
+├── INSTALLATION.md                  ← this file
+├── docker-compose.yml               ← PostgreSQL x2 + Apollo Router
+├── .env                             ← (create in Part B) Apollo Studio keys
 ├── postgres/
-│   ├── init-accounts.sql        ← DDL + seed data for DB1
-│   └── init-transactions.sql    ← DDL + seed data for DB2
+│   ├── init-accounts.sql            ← DDL + seed data for DB1
+│   └── init-transactions.sql        ← DDL + seed data for DB2
 ├── router/
-│   ├── router.yaml              ← Apollo Router config
-│   ├── supergraph.yaml          ← Rover composition config
-│   └── supergraph.graphql       ← Composed supergraph schema
+│   ├── router.yaml                  ← Apollo Router config
+│   ├── supergraph.yaml              ← Rover composition config
+│   └── supergraph.graphql           ← Composed supergraph schema (placeholder until Part D)
 └── scripts/
-    ├── start.sh                 ← Start all containers
-    ├── stop.sh                  ← Stop all containers
-    ├── status.sh                ← Health check all services
-    ├── compose-supergraph.sh    ← Re-compose supergraph via Rover
-    └── reset-databases.sh       ← Wipe and re-seed databases
+    ├── install-host-prerequisites.sh ← One-time host setup (Part A)
+    ├── start.sh                      ← Start all containers
+    ├── stop.sh                       ← Stop all containers
+    ├── status.sh                     ← Health check all services
+    ├── compose-supergraph.sh         ← Re-compose supergraph via Rover
+    └── reset-databases.sh            ← Wipe and re-seed databases
 ```
 
 ---
@@ -234,27 +235,12 @@ APOLLO_GRAPH_REF=graphql-poc-xxxxxxx@current
 
 ## PART C — Start Infrastructure (Docker Compose)
 
-### Step 1 — Enable Apollo Studio Connection (optional but recommended)
+### Step 1 — Apollo Studio Connection (automatic)
 
-If you completed Part B and have `APOLLO_KEY` and `APOLLO_GRAPH_REF`, enable the connection in `docker-compose.yml`:
+The `docker-compose.yml` is pre-configured to read `APOLLO_KEY` and `APOLLO_GRAPH_REF` from the `.env` file you created in Part B. No manual editing needed.
 
-```bash
-cd installation/
-```
-
-Edit `docker-compose.yml` and **uncomment** the Apollo Studio environment variables in the `apollo-router` service:
-
-```yaml
-    environment:
-      APOLLO_ROUTER_CONFIG_PATH: /dist/config/router.yaml
-      APOLLO_ROUTER_SUPERGRAPH_PATH: /dist/config/supergraph.graphql
-      # Uncomment these two lines:
-      APOLLO_KEY: ${APOLLO_KEY}
-      APOLLO_GRAPH_REF: ${APOLLO_GRAPH_REF}
-```
-
-> This tells the Router to read `APOLLO_KEY` and `APOLLO_GRAPH_REF` from the `.env` file you created in Part B.
-> If you skip this, the Router still works — you just won't see the graph in Apollo Studio.
+- If `.env` exists → Router connects to Apollo Studio automatically
+- If `.env` is missing → Router runs standalone (no Studio connection, local Sandbox still works)
 
 ### Step 2 — Start All Containers
 
@@ -328,6 +314,7 @@ Even without Apollo Studio, you get a **local sandbox explorer**:
 
 | Script | What it does |
 |---|---|
+| `./scripts/install-host-prerequisites.sh` | One-time host setup — installs Docker, Java, Rover, etc. (Part A) |
 | `./scripts/start.sh` | Start all containers |
 | `./scripts/stop.sh` | Stop all containers (data preserved) |
 | `./scripts/status.sh` | Health check all services |
@@ -370,10 +357,12 @@ subgraphs:
   deposit:
     routing_url: http://host.docker.internal:8081/graphql
     schema:
-      subgraph_url: http://host.docker.internal:8081/graphql
+      # Rover runs natively on the host, so use localhost for introspection
+      subgraph_url: http://localhost:8081/graphql
 ```
 
-> This tells Rover where to find the subgraph and what Federation version to use.
+> - `routing_url` uses `host.docker.internal` because the **Router runs in Docker** and needs to reach the host
+> - `subgraph_url` uses `localhost` because **Rover runs natively on the host**
 
 ### Run supergraph composition
 
