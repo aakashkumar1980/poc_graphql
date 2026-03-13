@@ -1,0 +1,48 @@
+{
+	"info": {
+		"_postman_id": "25453210-4dc8165c-ce15-4209-a0b6-b63654dc1244",
+		"name": "Postman Collection (from GraphQL)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "queries",
+			"item": [
+				{
+					"name": "_placeholder",
+					"id": "25453210-c7a9c4c2-eab8-4640-8621-e348ea97673c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query _placeholder {\n    _placeholder\n}",
+								"variables": "{}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "25453210-32b5eee8-308e-4a71-834d-3dbdd9fae104"
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "",
+			"type": "any",
+			"description": "URL for the request."
+		}
+	]
+}
