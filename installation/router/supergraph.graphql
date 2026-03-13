@@ -3,7 +3,6 @@ schema
   @link(url: "https://specs.apollo.dev/join/v0.4", for: EXECUTION)
 {
   query: Query
-  mutation: Mutation
 }
 
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
@@ -22,31 +21,12 @@ enum join__Graph {
 }
 
 enum link__Purpose {
-  """
-  `SECURITY` features provide metadata necessary to securely resolve fields.
-  """
   SECURITY
-
-  """
-  `EXECUTION` features provide metadata necessary for operation execution.
-  """
   EXECUTION
 }
 
 type Query
   @join__type(graph: DEPOSIT)
 {
-  """Placeholder query — will be replaced when Spring Boot subgraph is composed"""
-  _service: _Service!
-}
-
-type Mutation
-  @join__type(graph: DEPOSIT)
-{
-  """Placeholder mutation"""
-  _placeholder(unused: String): String
-}
-
-type _Service {
-  sdl: String
+  _placeholder: String @join__field(graph: DEPOSIT)
 }
