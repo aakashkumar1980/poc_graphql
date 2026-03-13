@@ -231,7 +231,9 @@ docker compose exec postgres-accounts psql -U poc_user -d deposit_accounts -c "S
 # Expected: 3
 
 # Router
-curl -sf http://localhost:4000/ -o /dev/null && echo "Router is UP" || echo "Router is DOWN"
+curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:4000/ \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ __typename }"}' | grep -q "200" && echo "Router is UP" || echo "Router is DOWN"
 ```
 
 **Phase 2 is DONE.** Infrastructure is running. Proceed to development.

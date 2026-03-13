@@ -31,7 +31,7 @@ else
 fi
 
 # Apollo Router
-if curl -sf http://localhost:4000/health > /dev/null 2>&1; then
+if curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:4000/ -H "Content-Type: application/json" -d '{"query":"{ __typename }"}' 2>/dev/null | grep -q "200"; then
     echo "  Apollo Router:       HEALTHY"
 else
     echo "  Apollo Router:       NOT REACHABLE"
