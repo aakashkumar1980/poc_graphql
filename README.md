@@ -8,13 +8,13 @@ A proof-of-concept demonstrating **Apollo Federation 2** with a **Spring Boot Gr
 
 | Step | Command | When |
 |---|---|---|
-| **1. Install tools** | `./installation/scripts/install-host-prerequisites.sh` | Once per machine |
+| **1. Install tools** | `./_installation/scripts/install-host-prerequisites.sh` | Once per machine |
 | **2. Start infra** | `cd installation && ./scripts/start.sh` | Each work session |
 | **3. Run subgraph** | `cd deposit-subgraph && ./gradlew bootRun` | Each work session |
 | **4. Compose schema** | `cd installation && ./scripts/compose-supergraph.sh` | After schema changes |
 | **5. Test** | See [Test the Full Flow](#test-the-full-flow) | Anytime |
 
-> For detailed installation steps, see [installation/INSTALLATION.md](installation/INSTALLATION.md).
+> For detailed installation steps, see [_installation/INSTALLATION.md](_installation/INSTALLATION.md).
 
 ---
 
@@ -68,7 +68,7 @@ poc_graphql/
 ├── README.md                        ← this file
 ├── graphql_poc_architecture.svg     ← full architecture diagram
 ├── graphql_poc_data_flow.svg        ← data flow diagram
-├── installation/                    ← infrastructure setup (see INSTALLATION.md)
+├── _installation/                    ← infrastructure setup (see INSTALLATION.md)
 │   ├── INSTALLATION.md              ← Phase 1 & 2: install tools, start infra
 │   ├── docker-compose.yml           ← PostgreSQL x2 + Apollo Router
 │   ├── postgres/                    ← DB init scripts & seed data
@@ -108,7 +108,7 @@ poc_graphql/
 
 ## Develop the Spring Boot Subgraph
 
-> **Prerequisite:** Infrastructure must be running (Phase 2 in [INSTALLATION.md](installation/INSTALLATION.md)).
+> **Prerequisite:** Infrastructure must be running (Phase 2 in [INSTALLATION.md](_installation/INSTALLATION.md)).
 
 ### How the Subgraph Works
 
@@ -267,7 +267,7 @@ Expected response:
 ### Compose the Supergraph
 
 ```bash
-cd installation/
+cd _installation/
 ./scripts/compose-supergraph.sh
 ```
 
