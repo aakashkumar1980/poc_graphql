@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "25453210-4dc8165c-ce15-4209-a0b6-b63654dc1244",
-		"name": "Postman Collection (from GraphQL)",
+		"name": "GraphQL POC — Deposit Subgraph",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -9,7 +9,7 @@
 			"name": "queries",
 			"item": [
 				{
-					"name": "_placeholder",
+					"name": "getAccount",
 					"id": "25453210-c7a9c4c2-eab8-4640-8621-e348ea97673c",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -20,8 +20,58 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "query _placeholder {\n    _placeholder\n}",
-								"variables": "{}"
+								"query": "query GetAccount($id: ID!) {\n    getAccount(id: $id) {\n        id\n        customerId\n        accountNumber\n        status\n        createdAt\n        balance {\n            id\n            available\n            current\n            currency\n            updatedAt\n        }\n        transactions {\n            id\n            amount\n            description\n            merchant\n            txnDate\n        }\n    }\n}",
+								"variables": "{\n    \"id\": \"ACT-234\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAccount - minimal fields",
+					"id": "25453210-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetAccountMinimal($id: ID!) {\n    getAccount(id: $id) {\n        accountNumber\n        status\n        balance {\n            available\n            current\n            currency\n        }\n    }\n}",
+								"variables": "{\n    \"id\": \"ACT-567\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAccount - transactions only",
+					"id": "25453210-b2c3d4e5-f6a7-8901-bcde-f12345678901",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetAccountTransactions($id: ID!) {\n    getAccount(id: $id) {\n        accountNumber\n        transactions {\n            id\n            amount\n            description\n            merchant\n            txnDate\n        }\n    }\n}",
+								"variables": "{\n    \"id\": \"ACT-234\"\n}"
 							}
 						},
 						"url": {
@@ -40,9 +90,9 @@
 	"variable": [
 		{
 			"key": "url",
-			"value": "",
-			"type": "any",
-			"description": "URL for the request."
+			"value": "http://localhost:4000",
+			"type": "string",
+			"description": "Apollo Router URL (gateway)"
 		}
 	]
 }

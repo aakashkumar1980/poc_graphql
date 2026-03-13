@@ -43,7 +43,7 @@ Deposit Subgraph (:8081)       ← Spring Boot app (Host)
 ## Folder Structure
 
 ```
-installation/
+_installation/
 ├── INSTALLATION.md                  ← this file
 ├── docker-compose.yml               ← PostgreSQL x2 + Apollo Router
 ├── .env                             ← (create in Phase 2) Apollo Studio keys
@@ -75,8 +75,8 @@ Everything in this phase is done **once**. After this, your machine is ready for
 
 ### Option A — Automated (recommended)
 ```bash
-chmod +x installation/scripts/install-host-prerequisites.sh
-./installation/scripts/install-host-prerequisites.sh
+chmod +x _installation/scripts/install-host-prerequisites.sh
+./_installation/scripts/install-host-prerequisites.sh
 ```
 
 ### Option B — Manual (step by step)
@@ -169,7 +169,7 @@ Follow prompts:
 
 ### Save credentials
 ```bash
-cat > installation/.env << 'EOF'
+cat > _installation/.env << 'EOF'
 APOLLO_KEY=service:graphql-poc-xxxxxxx:xxxxxxxxxxxxx
 APOLLO_GRAPH_REF=graphql-poc-xxxxxxx@current
 EOF
@@ -193,7 +193,7 @@ At this point you should have:
 | Rover CLI | `rover --version` |
 | Postman | Open the app |
 | Apollo Studio graph | Check https://studio.apollographql.com/ (optional) |
-| `.env` file | `cat installation/.env` (optional) |
+| `.env` file | `cat _installation/.env` (optional) |
 
 **Phase 1 is DONE.** You never need to repeat these steps.
 
@@ -208,7 +208,7 @@ Run this each time you start working on the POC (e.g., after a reboot).
 ## 2.1 — Start Docker Containers
 
 ```bash
-cd installation/
+cd _installation/
 ./scripts/start.sh
 ```
 

@@ -37,8 +37,7 @@
 <line x1="990" y1="416" x2="1670" y2="416" stroke="#e9e3ff" stroke-width="1.2"/>
 <text x="1330" y="446" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">supergraph.graphql</text>
 <text x="1330" y="476" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">router.yaml</text>
-<text x="1330" y="506" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">rover dev --supergraph-config</text>
-<text x="1330" y="536" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">  supergraph.yaml</text>
+<text x="1330" y="506" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#7c3aed">supergraph.yaml</text>
 <line x1="990" y1="568" x2="1670" y2="568" stroke="#e9e3ff" stroke-width="1.2"/>
 <text x="1330" y="598" text-anchor="middle" font-family="Sora,sans-serif" font-size="15" fill="#7c3aed">→ Connected to Apollo Studio</text>
 <text x="1330" y="630" text-anchor="middle" font-family="Sora,sans-serif" font-size="15" fill="#7c3aed">→ Schema hot-reload on change</text>
@@ -53,7 +52,7 @@
 <text x="2805" y="244" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">@QueryMapping     account(id: String) : Account</text>
 <text x="2805" y="274" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">@SchemaMapping    balance(account: Account) : Balance</text>
 <text x="2805" y="304" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">@BatchMapping     transactions(accounts: List&lt;Account&gt;) : Map&lt;Account, List&lt;Transaction&gt;&gt;</text>
-<text x="2805" y="334" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">@MutationMapping  openDispute(txnId: String, reason: String) : DisputeCase</text>
+<text x="2805" y="334" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="15" fill="#374151">@SchemaMapping    transactions(account: Account) : List&lt;Transaction&gt;</text>
 <line x1="1860" y1="382" x2="3750" y2="382" stroke="#86efac" stroke-width="2"/>
 <rect x="1860" y="386" width="1890" height="34" rx="4" fill="#f0fdf4" stroke="#86efac" stroke-width="0"/>
 <text x="1872" y="410" font-family="JetBrains Mono,monospace" font-size="17" fill="#0e7a50" font-weight="700">Service Layer</text>
