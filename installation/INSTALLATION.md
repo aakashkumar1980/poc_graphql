@@ -263,71 +263,17 @@ docker compose exec postgres-transactions psql -U poc_user -d deposit_transactio
 
 ---
 
-# PHASE 3 — DEVELOP THE SPRING BOOT SUBGRAPH
-
-> **Prerequisite:** Phase 2 must be complete (infrastructure running).
-
-This is the main development work — building the Spring Boot GraphQL subgraph.
-
-1. Create the Spring Boot project with multi-datasource configuration
-2. Define the GraphQL schema (`schema.graphqls`)
-3. Implement resolvers, services, and repositories
-4. Start the app on `:8081`
-
 ---
 
-# PHASE 4 — COMPOSE SUPERGRAPH & TEST END-TO-END
+## Next: Development & Testing
 
-> **Prerequisite:** Phase 3 must be complete (Spring Boot running on :8081).
+Phase 1 (one-time setup) and Phase 2 (start infrastructure) are covered above.
 
-## 4.1 — Compose the Supergraph
+For **Phase 3** (develop the Spring Boot subgraph) and **Phase 4** (compose supergraph & test end-to-end), see the main **[README.md](../README.md)**.
 
-```bash
-cd installation/
-./scripts/compose-supergraph.sh
-```
-
-This uses Rover to:
-1. Introspect the Spring Boot subgraph at `http://localhost:8081/graphql`
-2. Compose the supergraph schema using Federation 2.7.1
-3. Write `router/supergraph.graphql`
-4. Restart the Router to load the new schema
-
-### Configuration reference
-
-`router/supergraph.yaml`:
-```yaml
-federation_version: =2.7.1
-subgraphs:
-  deposit:
-    routing_url: http://host.docker.internal:8081/graphql   # Router (Docker) → Host
-    schema:
-      subgraph_url: http://localhost:8081/graphql            # Rover (Host) → Host
-```
-
-> Re-run `compose-supergraph.sh` after any GraphQL schema changes.
-
-## 4.2 — Test End-to-End
-
-```bash
-# Via Router (the full path: Postman → Router → Subgraph → DB)
-curl -s http://localhost:4000/ \
-  -H "Content-Type: application/json" \
-  -d '{"query":"{ hello }"}' | jq .
-```
-
-## 4.3 — Explore with Apollo Tools
-
-- **Local Sandbox:** Open http://localhost:4000 in browser (built-in GraphQL IDE)
-- **Apollo Studio:** Check https://studio.apollographql.com/ — graph should now show as connected with full schema
-
----
-
-## Summary
-
-| Phase | What | When |
-|---|---|---|
-| **Phase 1** | Install tools, create Apollo account | Once per machine |
-| **Phase 2** | `./scripts/start.sh` | Each work session |
-| **Phase 3** | Build Spring Boot subgraph | Development |
-| **Phase 4** | `./scripts/compose-supergraph.sh` + test | After each schema change |
+| Phase | What | Where | When |
+|---|---|---|---|
+| **Phase 1** | Install tools, create Apollo account | This file | Once per machine |
+| **Phase 2** | `./scripts/start.sh` | This file | Each work session |
+| **Phase 3** | Build Spring Boot subgraph | [README.md](../README.md) | Development |
+| **Phase 4** | Compose supergraph + test | [README.md](../README.md) | After schema changes |
