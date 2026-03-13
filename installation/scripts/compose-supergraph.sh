@@ -22,12 +22,15 @@ fi
 
 echo "  Subgraph detected on :8081"
 
-# Use Rover via Docker to compose the supergraph
-docker run --rm \
-    --network host \
-    -v "$ROUTER_DIR:/config" \
-    ghcr.io/apollographql/rover:latest \
-    supergraph compose --config /config/supergraph.yaml --output /config/supergraph.graphql
+# Check if Rover is installed
+if ! command -v rover &> /dev/null; then
+    echo "ERROR: Rover CLI is not installed."
+    echo "       Install it with: curl -sSL https://rover.apollo.dev/nix/latest | sh"
+    exit 1
+fi
+
+# Use native Rover to compose the supergraph
+rover supergraph compose --config "$ROUTER_DIR/supergraph.yaml" --output "$ROUTER_DIR/supergraph.graphql"
 
 echo ""
 echo "  Supergraph schema written to: router/supergraph.graphql"
