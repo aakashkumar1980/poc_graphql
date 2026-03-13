@@ -17,14 +17,14 @@ echo ""
 echo "--- Connectivity Checks ---"
 
 # PostgreSQL 1
-if psql -h localhost -p 5432 -U poc_user -d deposit_accounts -c "SELECT 'OK';" -t 2>/dev/null | grep -q OK; then
+if docker compose exec -T postgres-accounts pg_isready -U poc_user -d deposit_accounts > /dev/null 2>&1; then
     echo "  DB1 (accounts):      CONNECTED"
 else
     echo "  DB1 (accounts):      NOT REACHABLE"
 fi
 
 # PostgreSQL 2
-if psql -h localhost -p 5433 -U poc_user -d deposit_transactions -c "SELECT 'OK';" -t 2>/dev/null | grep -q OK; then
+if docker compose exec -T postgres-transactions pg_isready -U poc_user -d deposit_transactions > /dev/null 2>&1; then
     echo "  DB2 (transactions):  CONNECTED"
 else
     echo "  DB2 (transactions):  NOT REACHABLE"
