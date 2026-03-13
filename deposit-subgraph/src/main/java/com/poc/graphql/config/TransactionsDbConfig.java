@@ -45,7 +45,9 @@ public class TransactionsDbConfig {
                 .persistenceUnit("transactions")
                 .properties(Map.of(
                         "hibernate.hbm2ddl.auto", "none",
-                        "hibernate.show_sql", "true"
+                        "hibernate.show_sql", "true",
+                        "hibernate.physical_naming_strategy",
+                            "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy"
                 ))
                 .build();
     }
