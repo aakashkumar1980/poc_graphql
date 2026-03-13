@@ -12,7 +12,7 @@ A proof-of-concept demonstrating **Apollo Federation 2** with a **Spring Boot Gr
 | **2. Start infra** | `cd installation && ./scripts/start.sh` | Each work session |
 | **3. Run subgraph** | `cd deposit-subgraph && ./gradlew bootRun` | Each work session |
 | **4. Compose schema** | `cd installation && ./scripts/compose-supergraph.sh` | After schema changes |
-| **5. Test** | `curl -s http://localhost:4000/ -H "Content-Type: application/json" -d '{"query":"{ hello }"}'` | Anytime |
+| **5. Test** | See [Test the Full Flow](#test-the-full-flow) | Anytime |
 
 > For detailed installation steps, see [installation/INSTALLATION.md](installation/INSTALLATION.md).
 
@@ -31,12 +31,14 @@ A proof-of-concept demonstrating **Apollo Federation 2** with a **Spring Boot Gr
 A client sends a GraphQL query. Here's how it flows through the system:
 
 ```
- ┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐     ┌──────────────┐
- │   POSTMAN    │────▶│  APOLLO ROUTER   │────▶│  SPRING BOOT    │────▶│  POSTGRESQL   │
- │  (client)    │◀────│  :4000 (Docker)  │◀────│  :8081 (Host)   │◀────│  :5432/:5433  │
- └─────────────┘     └──────────────────┘     └─────────────────┘     └──────────────┘
-      Step 1               Step 2                   Step 3                 Step 4
-   Send query         Validate & route          Resolve fields         Fetch data
+ ┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐     ┌───────────────────────────┐
+ │   POSTMAN    │────▶│  APOLLO ROUTER   │────▶│  SPRING BOOT    │────▶│       POSTGRESQL          │
+ │  (client)    │◀────│  :4000 (Docker)  │◀────│  :8081 (Host)   │◀────│  :5432        :5433       │
+ └─────────────┘     └──────────────────┘     └─────────────────┘     │  accounts    transactions  │
+      Step 1               Step 2                   Step 3            │  balances                  │
+   Send query         Validate & route          Resolve fields        └───────────────────────────┘
+                                                                              Step 4
+                                                                           Fetch data
 ```
 
 **Step 1 — Client sends query:**
@@ -46,10 +48,10 @@ The client (Postman, Apollo Studio, or any HTTP client) sends a GraphQL query to
 Apollo Router receives the query, validates it against the composed supergraph schema, and routes it to the correct subgraph (our Spring Boot app).
 
 **Step 3 — Subgraph resolves fields:**
-Spring Boot receives the query, matches it to a resolver (`@QueryMapping`), which calls a service/repository to fetch data via JPA.
+Spring Boot receives the query, matches it to a resolver (`@QueryMapping`), which calls the service layer, then repositories to fetch data via JPA.
 
 **Step 4 — Database returns data:**
-PostgreSQL executes the SQL query and returns rows. The data flows back: DB → JPA Entity → Resolver → Router → Client.
+PostgreSQL executes the SQL query and returns rows. The data flows back: DB → JPA Entity → Repository → Service → Resolver → Router → Client.
 
 ### Detailed Architecture Diagram
 
@@ -78,12 +80,28 @@ poc_graphql/
     └── src/main/
         ├── java/com/poc/graphql/
         │   ├── DepositSubgraphApplication.java
-        │   ├── entity/Hello.java           ← JPA entity (@Table)
-        │   ├── repository/HelloRepository.java  ← Spring Data JPA
-        │   └── resolver/HelloResolver.java      ← GraphQL resolver (@QueryMapping)
+        │   ├── config/
+        │   │   ├── AccountsDbConfig.java          ← DB1 datasource config
+        │   │   └── TransactionsDbConfig.java       ← DB2 datasource config
+        │   ├── accounts/
+        │   │   ├── entity/
+        │   │   │   ├── Account.java                ← @Table("accounts")
+        │   │   │   └── Balance.java                ← @Table("balances")
+        │   │   └── repository/
+        │   │       ├── AccountRepository.java
+        │   │       └── BalanceRepository.java
+        │   ├── transactions/
+        │   │   ├── entity/
+        │   │   │   └── Transaction.java            ← @Table("transactions")
+        │   │   └── repository/
+        │   │       └── TransactionRepository.java
+        │   ├── service/
+        │   │   └── AccountService.java             ← Business logic layer
+        │   └── resolver/
+        │       └── AccountResolver.java            ← @QueryMapping
         └── resources/
-            ├── application.yml              ← DB connection, port 8081
-            └── graphql/schema.graphqls      ← GraphQL schema definition
+            ├── application.yml              ← Multi-datasource config (DB1 + DB2)
+            └── graphql/schema.graphqls      ← GraphQL schema (READ queries)
 ```
 
 ---
@@ -97,60 +115,109 @@ poc_graphql/
 The Spring Boot subgraph is a standard Spring Boot app with **Spring for GraphQL**. Here's how the pieces connect:
 
 ```
-schema.graphqls          →  Defines what queries/mutations are available
+schema.graphqls          →  Defines what queries are available
         ↓
-HelloResolver.java       →  Maps GraphQL queries to Java methods (@QueryMapping)
+AccountResolver.java     →  Maps GraphQL queries to Java methods (@QueryMapping)
         ↓
-HelloRepository.java     →  Spring Data JPA interface (auto-generates SQL)
+AccountService.java      →  Business logic and data aggregation (@Service)
         ↓
-Hello.java (Entity)      →  Maps to the "hello" table in PostgreSQL
+AccountRepository.java   →  Spring Data JPA interface (auto-generates SQL)
         ↓
-PostgreSQL               →  Stores the actual data
+Account.java (Entity)    →  Maps to the "accounts" table in PostgreSQL
+        ↓
+PostgreSQL               →  Stores the actual data (2 databases)
 ```
 
-### The Hello World Example
+### Multi-Datasource Architecture
 
-**GraphQL Schema** (`schema.graphqls`):
+This POC connects to **two separate PostgreSQL databases** simultaneously:
+
+| Database | Port | Contains | Config Class |
+|---|---|---|---|
+| `deposit_accounts` | :5432 | accounts, balances | `AccountsDbConfig.java` |
+| `deposit_transactions` | :5433 | transactions | `TransactionsDbConfig.java` |
+
+Each database has its own `DataSource`, `EntityManagerFactory`, and `TransactionManager` configured via Spring's `@Configuration` classes.
+
+### GraphQL Schema
+
 ```graphql
 type Query {
-    hello: String
+    getAccount(id: ID!): Account
+}
+
+type Account {
+    id: ID!
+    customerId: String!
+    accountNumber: String!
+    status: String!
+    createdAt: String
+    balance: Balance
+    transactions: [Transaction!]!
+}
+
+type Balance {
+    id: ID!
+    available: Float!
+    current: Float!
+    currency: String!
+    updatedAt: String
+}
+
+type Transaction {
+    id: ID!
+    amount: Float!
+    description: String!
+    merchant: String
+    txnDate: String
 }
 ```
 
-**Resolver** (`HelloResolver.java`):
+### Code Walkthrough
+
+**Resolver** (`AccountResolver.java`) — entry point for GraphQL queries:
 ```java
 @Controller
-public class HelloResolver {
-    private final HelloRepository helloRepository;
+public class AccountResolver {
+    private final AccountService accountService;
 
     @QueryMapping
-    public String hello() {
-        return helloRepository.findAll()
-                .stream().findFirst()
-                .map(Hello::getMessage)
-                .orElse("No message found");
+    public Account getAccount(@Argument String id) {
+        return accountService.getAccount(id).orElse(null);
+    }
+
+    @SchemaMapping(typeName = "Account", field = "balance")
+    public Balance balance(Account account) {
+        return accountService.getBalance(account.getId());
+    }
+
+    @SchemaMapping(typeName = "Account", field = "transactions")
+    public List<Transaction> transactions(Account account) {
+        return accountService.getTransactions(account.getId());
     }
 }
 ```
 
-**Entity** (`Hello.java`):
+**Service** (`AccountService.java`) — aggregates data from both databases:
 ```java
-@Entity
-@Table(name = "hello")
-public class Hello {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String message;
-}
-```
+@Service
+public class AccountService {
+    private final AccountRepository accountRepository;
+    private final BalanceRepository balanceRepository;
+    private final TransactionRepository transactionRepository;
 
-**Database table** (auto-created by `init-accounts.sql`):
-```sql
-CREATE TABLE hello (
-    id      SERIAL PRIMARY KEY,
-    message VARCHAR(255) NOT NULL
-);
-INSERT INTO hello (message) VALUES ('Hello World from GraphQL POC!');
+    public Optional<Account> getAccount(String id) {
+        return accountRepository.findById(id);
+    }
+
+    public Balance getBalance(String accountId) {
+        return balanceRepository.findByAccountId(accountId);
+    }
+
+    public List<Transaction> getTransactions(String accountId) {
+        return transactionRepository.findByAccountIdOrderByTxnDateDesc(accountId);
+    }
+}
 ```
 
 ### Build & Run
@@ -166,9 +233,30 @@ Test directly:
 ```bash
 curl -s http://localhost:8081/graphql \
   -H "Content-Type: application/json" \
-  -d '{"query":"{ hello }"}' | jq .
+  -d '{"query":"{ getAccount(id: \"ACT-234\") { accountNumber status balance { available current currency } transactions { description amount merchant } } }"}' | jq .
 ```
-Expected: `{"data":{"hello":"Hello World from GraphQL POC!"}}`
+
+Expected response:
+```json
+{
+  "data": {
+    "getAccount": {
+      "accountNumber": "****1234",
+      "status": "ACTIVE",
+      "balance": {
+        "available": 4850.00,
+        "current": 5100.00,
+        "currency": "USD"
+      },
+      "transactions": [
+        { "description": "Starbucks #4421", "amount": -42.50, "merchant": "Starbucks" },
+        { "description": "Amazon.com", "amount": -125.00, "merchant": "Amazon" },
+        { "description": "Direct Deposit - Payroll", "amount": 2500.00, "merchant": null }
+      ]
+    }
+  }
+}
+```
 
 ---
 
@@ -196,9 +284,8 @@ This uses **Rover CLI** to:
 # Query through the Apollo Router (full path: Client → Router → Subgraph → DB)
 curl -s http://localhost:4000/ \
   -H "Content-Type: application/json" \
-  -d '{"query":"{ hello }"}' | jq .
+  -d '{"query":"{ getAccount(id: \"ACT-234\") { accountNumber balance { available } transactions { description amount } } }"}' | jq .
 ```
-Expected: `{"data":{"hello":"Hello World from GraphQL POC!"}}`
 
 ### Explore with Apollo Tools
 
@@ -217,18 +304,30 @@ Expected: `{"data":{"hello":"Hello World from GraphQL POC!"}}`
 | **Test Client** | Postman | — | Host | Send GraphQL queries |
 | **Apollo Router** | Apollo Router v1.57.1 | :4000 | Docker | GraphQL Gateway (Federation) |
 | **Deposit Subgraph** | Spring Boot 3.3 + Java 21 | :8081 | Host | GraphQL subgraph + business logic |
-| **Database 1** | PostgreSQL 15 | :5432 | Docker | accounts, balances, hello |
-| **Database 2** | PostgreSQL 15 | :5433 | Docker | transactions, disputes |
-| **Rover CLI** | Apollo Rover | — | Host | Schema composition tooling |
+| **Database 1** | PostgreSQL 15 | :5432 | Docker | accounts, balances |
+| **Database 2** | PostgreSQL 15 | :5433 | Docker | transactions |
 | **Apollo Studio** | Cloud | — | Browser | Schema explorer (optional) |
 
 ---
 
-## What's Next
+## Seed Data
 
-After the Hello World demo, the full POC will add:
-1. Multi-datasource configuration (connecting to both DBs)
-2. Full GraphQL schema with Account, Balance, Transaction, Dispute types
-3. Query: `getAccount(id)` — returns account with balance and recent transactions
-4. Mutation: `openDispute(transactionId, reason)` — creates a dispute case
-5. Apollo Federation 2 directives (`@key`, `@shareable`, etc.)
+The databases come pre-loaded with sample data:
+
+**Accounts (DB1 :5432)**
+| ID | Account # | Status | Balance (available / current) |
+|---|---|---|---|
+| ACT-234 | ****1234 | ACTIVE | $4,850.00 / $5,100.00 |
+| ACT-567 | ****5678 | ACTIVE | $12,340.50 / $12,340.50 |
+| ACT-890 | ****9012 | DORMANT | $200.00 / $200.00 |
+
+**Transactions (DB2 :5433)**
+| ID | Account | Amount | Merchant | Date |
+|---|---|---|---|---|
+| TXN-8821 | ACT-234 | -$42.50 | Starbucks | 2026-03-01 |
+| TXN-8822 | ACT-234 | -$125.00 | Amazon | 2026-02-28 |
+| TXN-8823 | ACT-234 | +$2,500.00 | Payroll | 2026-02-27 |
+| TXN-8824 | ACT-234 | -$18.75 | Netflix | 2026-02-26 |
+| TXN-8825 | ACT-234 | -$65.30 | Shell | 2026-02-25 |
+| TXN-9901 | ACT-567 | -$200.00 | Walmart | 2026-03-02 |
+| TXN-9902 | ACT-567 | +$5,000.00 | Wire Transfer | 2026-03-01 |

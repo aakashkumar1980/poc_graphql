@@ -1,16 +1,24 @@
 server:
   port: 8081
 
-spring:
+app:
   datasource:
-    url: jdbc:postgresql://localhost:5432/deposit_accounts
-    username: poc_user
-    password: poc_pass
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: none
-    show-sql: true
+    accounts:
+      url: jdbc:postgresql://localhost:5432/deposit_accounts
+      username: poc_user
+      password: poc_pass
+      driver-class-name: org.postgresql.Driver
+    transactions:
+      url: jdbc:postgresql://localhost:5433/deposit_transactions
+      username: poc_user
+      password: poc_pass
+      driver-class-name: org.postgresql.Driver
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
   graphql:
     graphiql:
       enabled: true

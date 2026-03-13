@@ -36,14 +36,3 @@ INSERT INTO balances (id, account_id, available, current_bal, currency) VALUES
     ('BAL-003', 'ACT-890', 200.00, 200.00, 'USD')
 ON CONFLICT (id) DO NOTHING;
 
--- ============================================
--- TEST DATA (Hello World demo)
--- ============================================
-
-CREATE TABLE IF NOT EXISTS hello (
-    id      SERIAL PRIMARY KEY,
-    message VARCHAR(255) NOT NULL
-);
-
-INSERT INTO hello (message) VALUES ('Hello World from GraphQL POC!')
-ON CONFLICT DO NOTHING;
