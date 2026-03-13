@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import jakarta.persistence.EntityManagerFactory;
@@ -29,6 +31,18 @@ public class AccountsDbConfig {
     @ConfigurationProperties("app.datasource.accounts")
     public DataSourceProperties accountsDataSourceProperties() {
         return new DataSourceProperties();
+    }
+
+    @Primary
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        return new HibernateJpaVendorAdapter();
+    }
+
+    @Primary
+    @Bean
+    public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter) {
+        return new EntityManagerFactoryBuilder(jpaVendorAdapter, Map.of(), null);
     }
 
     @Primary
