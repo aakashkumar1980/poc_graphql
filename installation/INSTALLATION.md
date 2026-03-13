@@ -6,7 +6,7 @@ This document covers all software installations and account creation required to
 
 ---
 
-## Architecture Overview (Post-Meeting Changes)
+## Architecture Overview
 
 | Component | Runs In | Tech | Port |
 |---|---|---|---|
@@ -17,451 +17,6 @@ This document covers all software installations and account creation required to
 | **Database 2** | Docker | PostgreSQL 15 (transactions, disputes) | :5433 |
 | **Schema Tooling** | Host | Rover CLI (native install) | — |
 | **Schema Explorer** | Cloud | Apollo Studio | — |
-
-> **Removed from original diagram:** External Systems (WireMock / FIS / Deluxe TRIPs) — not needed for this POC.
-> **Changed:** Single database split into two PostgreSQL instances to demonstrate multi-datasource configuration.
-
----
-
-## Folder Structure
-
-```
-installation/
-├── INSTALLATION.md                  ← this file
-├── docker-compose.yml               ← PostgreSQL x2 + Apollo Router
-├── .env                             ← (create in Part B) Apollo Studio keys
-├── postgres/
-│   ├── init-accounts.sql            ← DDL + seed data for DB1
-│   └── init-transactions.sql        ← DDL + seed data for DB2
-├── router/
-│   ├── router.yaml                  ← Apollo Router config
-│   ├── supergraph.yaml              ← Rover composition config
-│   └── supergraph.graphql           ← Composed supergraph schema (placeholder until Part D)
-└── scripts/
-    ├── install-host-prerequisites.sh ← One-time host setup (Part A)
-    ├── start.sh                      ← Start all containers
-    ├── stop.sh                       ← Stop all containers
-    ├── status.sh                     ← Health check all services
-    ├── compose-supergraph.sh         ← Re-compose supergraph via Rover
-    └── reset-databases.sh            ← Wipe and re-seed databases
-```
-
----
-
-## PART A — Install on Host (native)
-
-### 1. Docker & Docker Compose
-
-```bash
-# Install Docker
-sudo apt update
-sudo apt install -y ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
-  https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Allow current user to run Docker without sudo
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Verify
-docker --version          # Expected: Docker version 24.x or later
-docker compose version    # Expected: Docker Compose version v2.x
-```
-
-### 2. Java 21 (required by Spring Boot 3.3 — needs Java 17+)
-
-```bash
-sudo apt install -y openjdk-21-jdk
-
-# Verify
-java -version
-# Expected: openjdk version "21.x.x"
-
-# Set JAVA_HOME (add to ~/.bashrc for persistence)
-echo 'export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64' >> ~/.bashrc
-source ~/.bashrc
-```
-
-### 3. Gradle (build tool for Spring Boot)
-
-Gradle uses a **wrapper** (`gradlew`) bundled in the project, so no system-wide install is needed.
-Just ensure `unzip` is available (used by the wrapper on first run):
-
-```bash
-sudo apt install -y unzip
-
-# Verify (run from the Spring Boot project root once it exists)
-./gradlew --version
-# Expected: Gradle 8.x
-```
-
-> **Note:** The Spring Boot project will include `gradlew` and `gradle/` wrapper files.
-> You do NOT need to install Gradle system-wide.
-
-### 4. Postman (Test Client)
-
-#### Option A — Snap install (easiest)
-```bash
-sudo snap install postman
-```
-
-#### Option B — Download from website
-1. Go to https://www.postman.com/downloads/
-2. Download the Linux x64 version
-3. Extract and run
-
-#### Account creation
-- Open Postman and sign up for a **free account** (or use without signing in for basic testing).
-
-### 5. Rover CLI (Apollo schema tooling)
-
-Rover is Apollo's CLI for managing schemas, composing supergraphs, and interacting with Apollo Studio.
-
-```bash
-# Install Rover
-curl -sSL https://rover.apollo.dev/nix/latest | sh
-
-# Add to PATH (the installer will show the exact path — typically ~/.rover/bin)
-echo 'export PATH="$HOME/.rover/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
-
-# Verify
-rover --version
-# Expected: rover x.x.x
-```
-
-> **Why native install?** Rover is used for interactive commands (`config auth`, `init`) that need terminal access, and for schema composition. A native install is simpler and more reliable than Docker for these tasks.
-
-### 6. Git, curl, jq (utilities)
-
-```bash
-sudo apt install -y git curl jq
-
-# Verify
-git --version
-curl --version | head -1
-jq --version
-```
-
----
-
-## PART B — Apollo Studio Setup (FREE)
-
-Apollo Studio is a cloud-based schema explorer that lets you browse your GraphQL schema and run live queries from a web UI. It connects to your self-hosted Apollo Router.
-
-> **Note:** Apollo Studio is **optional** for initial development — the Router works without it.
-> You also get a local sandbox explorer at `http://localhost:4000` once the Router is running.
-> Apollo Studio adds cloud-based schema registry and a shareable query explorer.
-
-### Step 1 — Create Apollo Studio Account
-
-1. Go to **https://studio.apollographql.com/**
-2. Click **"Create a free account"**
-3. Sign up with **GitHub** or email (free tier, no credit card required)
-4. Once logged in, you'll land on the **Graphs** page (e.g. `https://studio.apollographql.com/org/<your-org>/graphs`)
-
-### Step 2 — Authenticate Rover CLI with Apollo Studio
-
-Rover CLI (installed in Part A, Step 5) needs to be linked to your Apollo Studio account.
-
-```bash
-rover config auth
-```
-
-This will:
-- Display a URL — open it in your browser
-- Ask you to log in and authorize Rover
-- Give you a **Personal API Key** — paste it back into the terminal when prompted
-
-The key is saved locally at `~/.rover/` and persists across sessions.
-
-### Step 3 — Create the Graph using Rover
-
-`rover init` requires an empty directory. Use a temp directory — we only need the credentials it generates, not the scaffolded files (since we're using Spring Boot, not the Node.js template it creates).
-
-```bash
-# Create a temp directory and run rover init
-mkdir -p /tmp/rover-init && rover init --path /tmp/rover-init
-```
-
-Follow the interactive prompts:
-1. **Select option:** `Create a new graph`
-2. **Select use case:** `Start a graph with GraphQL APIs`
-3. **Name your project:** `graphql-poc`
-4. **Confirm graph ID:** Accept the suggested ID (e.g. `graphql-poc-xxxxxxx`)
-5. **Proceed with creation?** `Y`
-
-Once complete, Rover will output credentials at the bottom:
-- **`APOLLO_KEY`** — a graph API key (starts with `service:graphql-poc-...:...`)
-- **`APOLLO_GRAPH_REF`** — e.g. `graphql-poc-xxxxxxx@current`
-
-> **Important:** Copy both values immediately. The `APOLLO_KEY` is shown only once.
-
-> **Note:** Rover scaffolds a Node.js/TypeScript project in the temp directory — **ignore those files**.
-> We use our own Spring Boot subgraph. Delete the temp directory after saving credentials:
-> ```bash
-> rm -rf /tmp/rover-init
-> ```
-
-### Step 4 — Save Credentials
-
-Create the `.env` file in the `installation/` directory:
-
-```bash
-# installation/.env  (DO NOT commit this file — it's in .gitignore)
-APOLLO_KEY=service:graphql-poc-xxxxxxx:xxxxxxxxxxxxx
-APOLLO_GRAPH_REF=graphql-poc-xxxxxxx@current
-```
-
-### Step 5 — Verify in Apollo Studio Portal
-
-1. Go back to **https://studio.apollographql.com/**
-2. You should see the **`graphql-poc`** graph listed on your Graphs page
-3. The graph will show as "not connected" until the Router is configured (Part C)
-
-> **What's next:** In Part C, we'll start the Apollo Router and connect it to Apollo Studio using these credentials.
-
----
-
-## PART C — Start Infrastructure (Docker Compose)
-
-### Step 1 — Apollo Studio Connection (automatic)
-
-The `docker-compose.yml` is pre-configured to read `APOLLO_KEY` and `APOLLO_GRAPH_REF` from the `.env` file you created in Part B. No manual editing needed.
-
-- If `.env` exists → Router connects to Apollo Studio automatically
-- If `.env` is missing → Router runs standalone (no Studio connection, local Sandbox still works)
-
-### Step 2 — Start All Containers
-
-```bash
-cd installation/
-
-# Start everything (PostgreSQL x2 + Apollo Router)
-./scripts/start.sh
-```
-
-This will:
-- Pull Docker images (postgres:15-alpine, Apollo Router v1.57.1)
-- Create two PostgreSQL databases with seed data
-- Start Apollo Router on port 4000
-
-### Step 3 — Verify Infrastructure
-
-```bash
-./scripts/status.sh
-```
-
-#### Verify each component individually:
-
-**Databases:**
-```bash
-# Check both PostgreSQL containers are healthy
-docker compose ps postgres-accounts postgres-transactions
-# Expected: both show "running" with health status "healthy"
-
-# Connect to databases to verify seed data
-docker compose exec postgres-accounts psql -U poc_user -d deposit_accounts -c "SELECT count(*) FROM accounts;"
-# Expected: 3
-
-docker compose exec postgres-transactions psql -U poc_user -d deposit_transactions -c "SELECT count(*) FROM transactions;"
-# Expected: 7
-```
-
-**Apollo Router:**
-```bash
-# Check Router container is running
-docker compose ps apollo-router
-# Expected: running
-
-# Check Router is responding (serves Apollo Sandbox UI)
-curl -sf http://localhost:4000/ -o /dev/null && echo "Router is UP" || echo "Router is DOWN"
-
-# Check Router logs for errors
-docker compose logs apollo-router --tail 20
-```
-
-> **Note:** The Router starts with a placeholder supergraph schema. It will return schema errors for real queries until the Spring Boot subgraph is running and the supergraph is composed (Part D).
-
-**Apollo Studio (if configured):**
-1. Go to **https://studio.apollographql.com/**
-2. Open your **`graphql-poc`** graph
-3. It should show as **connected** (green status)
-4. The schema explorer will populate once the supergraph is composed (Part D)
-
-### Step 4 — Explore Apollo Router Sandbox (local)
-
-Even without Apollo Studio, you get a **local sandbox explorer**:
-
-1. Open **http://localhost:4000** in your browser
-2. This is Apollo Sandbox — a built-in GraphQL IDE
-3. You can browse the schema, write queries, and test mutations here
-4. It works the same as Apollo Studio Explorer, but runs locally
-
-> **Sandbox vs Apollo Studio:** Sandbox is local and ephemeral. Apollo Studio is cloud-based, persists your queries, and provides schema version history.
-
-### Available scripts
-
-| Script | What it does |
-|---|---|
-| `./scripts/install-host-prerequisites.sh` | One-time host setup — installs Docker, Java, Rover, etc. (Part A) |
-| `./scripts/start.sh` | Start all containers |
-| `./scripts/stop.sh` | Stop all containers (data preserved) |
-| `./scripts/status.sh` | Health check all services |
-| `./scripts/compose-supergraph.sh` | Re-compose supergraph after schema changes (requires Spring Boot running on :8081) |
-| `./scripts/reset-databases.sh` | Wipe all data and re-seed from init SQL scripts |
-
-### Connect to databases manually
-
-```bash
-# Database 1 — accounts & balances
-docker compose exec postgres-accounts psql -U poc_user -d deposit_accounts
-
-# Database 2 — transactions & disputes
-docker compose exec postgres-transactions psql -U poc_user -d deposit_transactions
-```
-
----
-
-## PART D — Compose Supergraph with Rover CLI
-
-Rover CLI composes your subgraph schemas into a **supergraph schema** that the Apollo Router loads. Rover was installed natively in Part A, Step 5.
-
-> **When to run this:** After the Spring Boot subgraph is running on `:8081` (i.e., after the Spring Boot app is built and started).
-
-### How it works
-
-1. Rover introspects the running Spring Boot subgraph at `http://localhost:8081/graphql`
-2. It composes the subgraph schema into a single **supergraph schema** using Federation 2.7.1
-3. The output is written to `router/supergraph.graphql`
-4. The Apollo Router is restarted to load the new schema
-
-### Configuration
-
-The composition is configured in `router/supergraph.yaml`:
-
-```yaml
-federation_version: =2.7.1
-
-subgraphs:
-  deposit:
-    routing_url: http://host.docker.internal:8081/graphql
-    schema:
-      # Rover runs natively on the host, so use localhost for introspection
-      subgraph_url: http://localhost:8081/graphql
-```
-
-> - `routing_url` uses `host.docker.internal` because the **Router runs in Docker** and needs to reach the host
-> - `subgraph_url` uses `localhost` because **Rover runs natively on the host**
-
-### Run supergraph composition
-
-```bash
-cd installation/
-
-# Ensure Spring Boot subgraph is running on :8081 first!
-./scripts/compose-supergraph.sh
-```
-
-### Verify
-
-```bash
-# Check the generated supergraph has real schema content (not placeholder)
-head -30 router/supergraph.graphql
-# Expected: should contain your actual Query/Mutation types with @join directives
-
-# Test a query through the Router
-curl -s http://localhost:4000/ \
-  -H "Content-Type: application/json" \
-  -d '{"query":"{ __typename }"}' | jq .
-# Expected: {"data":{"__typename":"Query"}}
-```
-
-> **Re-run after schema changes:** Whenever you modify the GraphQL schema in the Spring Boot app, re-run `./scripts/compose-supergraph.sh` to update the supergraph and restart the Router.
-
----
-
-## PART E — Quick Verification Checklist
-
-### Host tools
-
-```bash
-echo "=== Host Installation Verification ==="
-echo -n "Docker:     "; docker --version
-echo -n "Compose:    "; docker compose version
-echo -n "Java:       "; java -version 2>&1 | head -1
-echo -n "Gradle:     "; gradle --version 2>&1 | grep "Gradle" | head -1 || echo "Uses wrapper (gradlew)"
-echo -n "Git:        "; git --version
-echo -n "curl:       "; curl --version 2>&1 | head -1
-echo -n "jq:         "; jq --version
-echo -n "Rover:      "; rover --version
-echo "=== Done ==="
-```
-
-### Docker infrastructure
-
-```bash
-cd installation/
-./scripts/status.sh
-```
-
-### Full end-to-end verification (after Spring Boot is running)
-
-```bash
-# 1. Databases are healthy
-docker compose ps                    # All 3 containers running
-
-# 2. Spring Boot subgraph responds
-curl -sf http://localhost:8081/graphql -H "Content-Type: application/json" \
-  -d '{"query":"{ __typename }"}' && echo " Subgraph OK"
-
-# 3. Supergraph is composed
-head -5 router/supergraph.graphql    # Should show real schema
-
-# 4. Router routes queries to subgraph
-curl -s http://localhost:4000/ -H "Content-Type: application/json" \
-  -d '{"query":"{ __typename }"}' | jq .
-# Expected: {"data":{"__typename":"Query"}}
-
-# 5. Apollo Studio shows graph (if configured)
-#    → Check https://studio.apollographql.com/ — graph should be "connected"
-```
-
----
-
-## Summary
-
-### What runs where
-
-| Where | What |
-|---|---|
-| **Docker** | PostgreSQL x2, Apollo Router |
-| **Host** | Java 21, Gradle (wrapper), Rover CLI, Spring Boot app, Postman, Git |
-| **Cloud** | Apollo Studio (optional, browser-based) |
-
-### Accounts needed
-
-| Service | Account Type | Cost | Purpose |
-|---|---|---|---|
-| **Apollo Studio** | Free tier | $0 | Schema registry, live query explorer |
-| **Postman** | Free (optional) | $0 | API testing |
-
-### Database credentials
-
-| Database | Host | Port | DB Name | User | Password |
-|---|---|---|---|---|---|
-| DB1 (accounts) | localhost | 5432 | deposit_accounts | poc_user | poc_pass |
-| DB2 (transactions) | localhost | 5433 | deposit_transactions | poc_user | poc_pass |
 
 ### End-to-end request flow
 
@@ -480,14 +35,299 @@ Deposit Subgraph (:8081)       ← Spring Boot app (Host)
 (:5432)   (:5433)
 ```
 
+> **Removed from original diagram:** External Systems (WireMock / FIS / Deluxe TRIPs) — not needed for this POC.
+> **Changed:** Single database split into two PostgreSQL instances to demonstrate multi-datasource configuration.
+
 ---
 
-## What's Next
+## Folder Structure
 
-Once all installations are verified:
-1. Create the Spring Boot subgraph project with multi-datasource configuration
+```
+installation/
+├── INSTALLATION.md                  ← this file
+├── docker-compose.yml               ← PostgreSQL x2 + Apollo Router
+├── .env                             ← (create in Phase 2) Apollo Studio keys
+├── postgres/
+│   ├── init-accounts.sql            ← DDL + seed data for DB1
+│   └── init-transactions.sql        ← DDL + seed data for DB2
+├── router/
+│   ├── router.yaml                  ← Apollo Router config
+│   ├── supergraph.yaml              ← Rover composition config
+│   └── supergraph.graphql           ← Composed supergraph schema (placeholder until Phase 4)
+└── scripts/
+    ├── install-host-prerequisites.sh ← One-time host setup (Phase 1)
+    ├── start.sh                      ← Start all containers
+    ├── stop.sh                       ← Stop all containers
+    ├── status.sh                     ← Health check all services
+    ├── compose-supergraph.sh         ← Re-compose supergraph via Rover
+    └── reset-databases.sh            ← Wipe and re-seed databases
+```
+
+---
+
+# PHASE 1 — ONE-TIME SETUP (do once on a fresh machine)
+
+Everything in this phase is done **once**. After this, your machine is ready for development.
+
+---
+
+## 1.1 — Install Host Prerequisites
+
+### Option A — Automated (recommended)
+```bash
+chmod +x installation/scripts/install-host-prerequisites.sh
+./installation/scripts/install-host-prerequisites.sh
+```
+
+### Option B — Manual (step by step)
+
+#### Docker & Docker Compose
+```bash
+sudo apt update
+sudo apt install -y ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+#### Java 21
+```bash
+sudo apt install -y openjdk-21-jdk
+echo 'export JAVA_HOME=/usr/lib/jvm/java-1.21.0-openjdk-amd64' >> ~/.bashrc
+source ~/.bashrc
+```
+
+#### Gradle
+```bash
+sudo apt install -y unzip
+# No system-wide install needed — uses wrapper (gradlew) from the project
+```
+
+#### Postman
+```bash
+sudo snap install postman
+# OR download from https://www.postman.com/downloads/
+```
+
+#### Rover CLI
+```bash
+curl -sSL https://rover.apollo.dev/nix/latest | sh
+echo 'export PATH="$HOME/.rover/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+#### Utilities
+```bash
+sudo apt install -y git curl jq
+```
+
+### Verify all host tools
+```bash
+docker --version && docker compose version && java -version && rover --version && git --version
+```
+
+---
+
+## 1.2 — Apollo Studio Account & Graph Creation
+
+> **Optional** — the Router works without Apollo Studio. Skip to Phase 2 if short on time.
+
+### Create account
+1. Go to **https://studio.apollographql.com/** → Create a free account (GitHub or email)
+
+### Authenticate Rover
+```bash
+rover config auth
+# Opens a URL in browser → log in → paste API key back into terminal
+```
+
+### Create the graph
+```bash
+mkdir -p /tmp/rover-init && rover init --path /tmp/rover-init
+```
+Follow prompts:
+1. `Create a new graph`
+2. `Start a graph with GraphQL APIs`
+3. Name: `graphql-poc`
+4. Accept graph ID → `Y`
+
+**Copy the credentials** from the output:
+- `APOLLO_KEY=service:graphql-poc-xxxxxxx:xxxxxxxxxxxxx`
+- `APOLLO_GRAPH_REF=graphql-poc-xxxxxxx@current`
+
+### Save credentials
+```bash
+cat > installation/.env << 'EOF'
+APOLLO_KEY=service:graphql-poc-xxxxxxx:xxxxxxxxxxxxx
+APOLLO_GRAPH_REF=graphql-poc-xxxxxxx@current
+EOF
+```
+
+### Cleanup
+```bash
+rm -rf /tmp/rover-init
+```
+
+---
+
+## 1.3 — Verify One-Time Setup is Complete
+
+At this point you should have:
+
+| Item | How to verify |
+|---|---|
+| Docker | `docker --version` |
+| Java 21 | `java -version` |
+| Rover CLI | `rover --version` |
+| Postman | Open the app |
+| Apollo Studio graph | Check https://studio.apollographql.com/ (optional) |
+| `.env` file | `cat installation/.env` (optional) |
+
+**Phase 1 is DONE.** You never need to repeat these steps.
+
+---
+
+# PHASE 2 — START INFRASTRUCTURE (do each work session)
+
+Run this each time you start working on the POC (e.g., after a reboot).
+
+---
+
+## 2.1 — Start Docker Containers
+
+```bash
+cd installation/
+./scripts/start.sh
+```
+
+This starts:
+- PostgreSQL x2 (ports 5432, 5433) with seed data
+- Apollo Router (port 4000) with placeholder schema
+
+> The `docker-compose.yml` auto-reads `.env` for Apollo Studio credentials. If `.env` is missing, Router runs standalone.
+
+## 2.2 — Verify Infrastructure is Running
+
+```bash
+./scripts/status.sh
+```
+
+Or manually:
+```bash
+# Databases
+docker compose exec postgres-accounts psql -U poc_user -d deposit_accounts -c "SELECT count(*) FROM accounts;"
+# Expected: 3
+
+# Router
+curl -sf http://localhost:4000/ -o /dev/null && echo "Router is UP" || echo "Router is DOWN"
+```
+
+**Phase 2 is DONE.** Infrastructure is running. Proceed to development.
+
+---
+
+## Useful Infrastructure Commands
+
+| Script | What it does |
+|---|---|
+| `./scripts/start.sh` | Start all containers |
+| `./scripts/stop.sh` | Stop all containers (data preserved) |
+| `./scripts/status.sh` | Health check all services |
+| `./scripts/compose-supergraph.sh` | Re-compose supergraph (after schema changes) |
+| `./scripts/reset-databases.sh` | Wipe all data and re-seed |
+
+### Connect to databases manually
+```bash
+docker compose exec postgres-accounts psql -U poc_user -d deposit_accounts
+docker compose exec postgres-transactions psql -U poc_user -d deposit_transactions
+```
+
+### Database credentials
+
+| Database | Port | DB Name | User | Password |
+|---|---|---|---|---|
+| DB1 (accounts) | 5432 | deposit_accounts | poc_user | poc_pass |
+| DB2 (transactions) | 5433 | deposit_transactions | poc_user | poc_pass |
+
+---
+
+# PHASE 3 — DEVELOP THE SPRING BOOT SUBGRAPH
+
+> **Prerequisite:** Phase 2 must be complete (infrastructure running).
+
+This is the main development work — building the Spring Boot GraphQL subgraph.
+
+1. Create the Spring Boot project with multi-datasource configuration
 2. Define the GraphQL schema (`schema.graphqls`)
-3. Start the Spring Boot app on `:8081`
-4. Run `./scripts/compose-supergraph.sh` to generate the supergraph
-5. Test end-to-end: Postman → Router (:4000) → Subgraph (:8081) → DBs
-6. (Optional) Open Apollo Studio to explore the schema from the cloud UI
+3. Implement resolvers, services, and repositories
+4. Start the app on `:8081`
+
+---
+
+# PHASE 4 — COMPOSE SUPERGRAPH & TEST END-TO-END
+
+> **Prerequisite:** Phase 3 must be complete (Spring Boot running on :8081).
+
+## 4.1 — Compose the Supergraph
+
+```bash
+cd installation/
+./scripts/compose-supergraph.sh
+```
+
+This uses Rover to:
+1. Introspect the Spring Boot subgraph at `http://localhost:8081/graphql`
+2. Compose the supergraph schema using Federation 2.7.1
+3. Write `router/supergraph.graphql`
+4. Restart the Router to load the new schema
+
+### Configuration reference
+
+`router/supergraph.yaml`:
+```yaml
+federation_version: =2.7.1
+subgraphs:
+  deposit:
+    routing_url: http://host.docker.internal:8081/graphql   # Router (Docker) → Host
+    schema:
+      subgraph_url: http://localhost:8081/graphql            # Rover (Host) → Host
+```
+
+> Re-run `compose-supergraph.sh` after any GraphQL schema changes.
+
+## 4.2 — Test End-to-End
+
+```bash
+# Via Router (the full path: Postman → Router → Subgraph → DB)
+curl -s http://localhost:4000/ \
+  -H "Content-Type: application/json" \
+  -d '{"query":"{ hello }"}' | jq .
+```
+
+## 4.3 — Explore with Apollo Tools
+
+- **Local Sandbox:** Open http://localhost:4000 in browser (built-in GraphQL IDE)
+- **Apollo Studio:** Check https://studio.apollographql.com/ — graph should now show as connected with full schema
+
+---
+
+## Summary
+
+| Phase | What | When |
+|---|---|---|
+| **Phase 1** | Install tools, create Apollo account | Once per machine |
+| **Phase 2** | `./scripts/start.sh` | Each work session |
+| **Phase 3** | Build Spring Boot subgraph | Development |
+| **Phase 4** | `./scripts/compose-supergraph.sh` + test | After each schema change |

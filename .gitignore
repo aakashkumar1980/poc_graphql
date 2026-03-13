@@ -26,3 +26,5 @@ replay_pid*
 # Environment secrets
 .env
 installation/.env
+deposit-subgraph/build/
+deposit-subgraph/.gradle/
