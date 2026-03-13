@@ -7,18 +7,18 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class HelloResolver {
 
-    private final HelloRepository helloRepository;
+  private final HelloRepository helloRepository;
 
-    public HelloResolver(HelloRepository helloRepository) {
-        this.helloRepository = helloRepository;
-    }
+  public HelloResolver(HelloRepository helloRepository) {
+    this.helloRepository = helloRepository;
+  }
 
-    @QueryMapping
-    public String hello() {
-        return helloRepository.findAll()
-                .stream()
-                .findFirst()
-                .map(h -> h.getMessage())
-                .orElse("No message found");
-    }
+  @QueryMapping
+  public String hello() {
+    return helloRepository.findAll()
+        .stream()
+        .findFirst()
+        .map(h -> h.getMessage())
+        .orElse("No message found");
+  }
 }
