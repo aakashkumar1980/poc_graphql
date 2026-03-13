@@ -28,5 +28,37 @@ enum link__Purpose {
 type Query
   @join__type(graph: DEPOSIT)
 {
-  _placeholder: String @join__field(graph: DEPOSIT)
+  getAccount(id: ID!): Account @join__field(graph: DEPOSIT)
+}
+
+type Account
+  @join__type(graph: DEPOSIT)
+{
+  id: ID!
+  customerId: String!
+  accountNumber: String!
+  status: String!
+  createdAt: String
+  balance: Balance
+  transactions: [Transaction!]!
+}
+
+type Balance
+  @join__type(graph: DEPOSIT)
+{
+  id: ID!
+  available: Float!
+  current: Float!
+  currency: String!
+  updatedAt: String
+}
+
+type Transaction
+  @join__type(graph: DEPOSIT)
+{
+  id: ID!
+  amount: Float!
+  description: String!
+  merchant: String
+  txnDate: String
 }
