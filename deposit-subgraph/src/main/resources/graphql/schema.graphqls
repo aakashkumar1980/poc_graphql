@@ -1,3 +1,29 @@
 type Query {
-  hello: String
+    getAccount(id: ID!): Account
+}
+
+type Account {
+    id: ID!
+    customerId: String!
+    accountNumber: String!
+    status: String!
+    createdAt: String
+    balance: Balance
+    transactions: [Transaction!]!
+}
+
+type Balance {
+    id: ID!
+    available: Float!
+    current: Float!
+    currency: String!
+    updatedAt: String
+}
+
+type Transaction {
+    id: ID!
+    amount: Float!
+    description: String!
+    merchant: String
+    txnDate: String
 }
