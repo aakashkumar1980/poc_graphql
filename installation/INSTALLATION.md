@@ -186,22 +186,31 @@ The key is saved locally at `~/.rover/` and persists across sessions.
 
 ### Step 3 — Create the Graph using Rover
 
-From the Apollo Studio Graphs page, it will prompt you to use `rover init`. Run:
+`rover init` requires an empty directory. Use a temp directory — we only need the credentials it generates, not the scaffolded files (since we're using Spring Boot, not the Node.js template it creates).
 
 ```bash
-rover init
+# Create a temp directory and run rover init
+mkdir -p /tmp/rover-init && rover init --path /tmp/rover-init
 ```
 
 Follow the interactive prompts:
-1. **Graph name:** `graphql-poc`
-2. **Graph type:** Select **Supergraph** (Federation 2)
-3. **Environment:** Select **Self-Hosted**
+1. **Select option:** `Create a new graph`
+2. **Select use case:** `Start a graph with GraphQL APIs`
+3. **Name your project:** `graphql-poc`
+4. **Confirm graph ID:** Accept the suggested ID (e.g. `graphql-poc-xxxxxxx`)
+5. **Proceed with creation?** `Y`
 
-Once complete, Rover will output:
-- **`APOLLO_KEY`** — a graph API key (starts with `service:graphql-poc:...`)
-- **`APOLLO_GRAPH_REF`** — e.g. `graphql-poc@current`
+Once complete, Rover will output credentials at the bottom:
+- **`APOLLO_KEY`** — a graph API key (starts with `service:graphql-poc-...:...`)
+- **`APOLLO_GRAPH_REF`** — e.g. `graphql-poc-xxxxxxx@current`
 
 > **Important:** Copy both values immediately. The `APOLLO_KEY` is shown only once.
+
+> **Note:** Rover scaffolds a Node.js/TypeScript project in the temp directory — **ignore those files**.
+> We use our own Spring Boot subgraph. Delete the temp directory after saving credentials:
+> ```bash
+> rm -rf /tmp/rover-init
+> ```
 
 ### Step 4 — Save Credentials
 
@@ -209,8 +218,8 @@ Create the `.env` file in the `installation/` directory:
 
 ```bash
 # installation/.env  (DO NOT commit this file — it's in .gitignore)
-APOLLO_KEY=service:graphql-poc:xxxxxxxxxxxxx
-APOLLO_GRAPH_REF=graphql-poc@current
+APOLLO_KEY=service:graphql-poc-xxxxxxx:xxxxxxxxxxxxx
+APOLLO_GRAPH_REF=graphql-poc-xxxxxxx@current
 ```
 
 ### Step 5 — Verify in Apollo Studio Portal
